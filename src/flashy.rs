@@ -1,5 +1,4 @@
 use crate::flashy_events::FlashyEvents;
-use crate::models;
 use crate::models::user::User;
 use eframe::{App, Frame};
 use egui::Context;
@@ -12,7 +11,7 @@ pub struct Flashy {
     db_pool: SqlitePool,
     pub current_operation: Option<Promise<FlashyEvents>>,
 
-    // dialogs
+    // dialogs/forms
     pub test_dialog_open: bool,
     pub auth_form: LoginRegisterDto,
 

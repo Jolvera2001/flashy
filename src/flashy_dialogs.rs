@@ -1,5 +1,5 @@
 use crate::flashy::Flashy;
-use crate::flashy_events::FlashyEvents;
+use crate::flashy_events::{ClearFieldEvent, FlashyEvents};
 use poll_promise::Promise;
 
 impl Flashy {
@@ -32,11 +32,13 @@ impl Flashy {
 
                         ui.horizontal(|ui| {
                             if ui.button("Login").clicked() {
-                                // login
+                                // login operation
                             }
 
                             if ui.button("Clear").clicked() {
-                                // clear fields
+                                self.current_operation = Some(Promise::spawn_async(async move {
+                                    FlashyEvents::ClearFields(ClearFieldEvent::LoginFields)
+                                }));
                             }
                         });
                     });
@@ -60,11 +62,13 @@ impl Flashy {
 
                         ui.horizontal(|ui| {
                             if ui.button("Register").clicked() {
-                                // login
+                                // register operation
                             }
 
                             if ui.button("Clear").clicked() {
-                                // clear fields
+                                self.current_operation = Some(Promise::spawn_async(async move {
+                                    FlashyEvents::ClearFields(ClearFieldEvent::RegisterFields)
+                                }));
                             }
                         });
                     });

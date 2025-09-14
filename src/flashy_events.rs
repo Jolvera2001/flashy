@@ -8,7 +8,14 @@ pub enum FlashyEvents {
     // ui
     DialogClosed(String),
     DialogOpened(String),
+    ClearFields(ClearFieldEvent),
 
     // error
     OperationFailed { operation: String, error: String },
+}
+
+pub enum ClearFieldEvent {
+    LoginFields,
+    RegisterFields,
+    RecurrenceFields,
 }

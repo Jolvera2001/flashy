@@ -1,5 +1,5 @@
 use crate::flashy::Flashy;
-use crate::flashy_events::FlashyEvents;
+use crate::flashy_events::{ClearFieldEvent, FlashyEvents};
 
 impl Flashy {
     pub fn handle_events(&mut self, ctx: &egui::Context) {
@@ -16,6 +16,20 @@ impl Flashy {
                     }
                     FlashyEvents::OperationFailed { operation, error } => {
                         println!("{}", format!("Operation: {} failed with error : {}", operation, error));
+                    }
+                    FlashyEvents::ClearFields(clear_field_event) => {
+                        match clear_field_event {
+                            ClearFieldEvent::LoginFields => { 
+                                self.auth_form.login_name = String::new();
+                                self.auth_form.login_password = String::new();
+                            }
+                            ClearFieldEvent::RegisterFields => {
+                                self.auth_form.register_name = String::new();
+                                self.auth_form.register_email = String::new();
+                                self.auth_form.register_password = String::new();
+                            }
+                            ClearFieldEvent::RecurrenceFields => {}
+                        }
                     }
                 }
                 self.current_operation = None;
