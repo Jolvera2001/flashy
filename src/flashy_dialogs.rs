@@ -1,0 +1,87 @@
+use crate::flashy::Flashy;
+use crate::flashy_events::FlashyEvents;
+use poll_promise::Promise;
+
+impl Flashy {
+    pub fn check_login_register_dialog(&mut self, ctx: &egui::Context) {
+        if !self.test_dialog_open {
+            return;
+        }
+
+        let mut open = true;
+
+        let mut login_name = String::new();
+        let mut login_password = String::new();
+        let mut register_name = String::new();
+        let mut register_email = String::new();
+        let mut register_password = String::new();
+
+        egui::Window::new("Login/Register")
+            .open(&mut open)
+            .resizable(true)
+            .default_height(500.0)
+            .show(ctx, |ui| {
+                ui.columns(2, |columns| {
+                    columns[0].group(|ui| {
+                        ui.vertical_centered(|ui| {
+                            ui.heading("Login");
+                        });
+                        ui.add_space(10.0);
+
+                        ui.label("Name:");
+                        ui.text_edit_singleline(&mut login_name);
+                        ui.add_space(5.0);
+
+                        ui.label("Password:");
+                        ui.text_edit_singleline(&mut login_password);
+                        ui.add_space(10.0);
+
+                        ui.horizontal(|ui| {
+                            if ui.button("Login").clicked() {
+                                // login
+                            }
+
+                            if ui.button("Clear").clicked() {
+                                // clear fields
+                            }
+                        });
+                    });
+                    columns[1].group(|ui| {
+                        ui.vertical_centered(|ui| {
+                            ui.heading("Register");
+                        });
+                        ui.add_space(10.0);
+
+                        ui.label("Name:");
+                        ui.text_edit_singleline(&mut register_name);
+                        ui.add_space(5.0);
+
+                        ui.label("Email:");
+                        ui.text_edit_singleline(&mut register_email);
+                        ui.add_space(5.0);
+
+                        ui.label("Password:");
+                        ui.text_edit_singleline(&mut register_password);
+                        ui.add_space(10.0);
+
+                        ui.horizontal(|ui| {
+                            if ui.button("Register").clicked() {
+                                // login
+                            }
+
+                            if ui.button("Clear").clicked() {
+                                // clear fields
+                            }
+                        });
+                    });
+                });
+            });
+
+        if !open {
+            self.current_operation = Some(Promise::spawn_async(async move {
+                FlashyEvents::DialogClosed(String::from("Login/Register"))
+            }));
+            self.test_dialog_open = false;
+        }
+    }
+}

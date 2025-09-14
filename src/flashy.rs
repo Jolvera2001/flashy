@@ -31,22 +31,13 @@ impl Flashy {
 
 impl App for Flashy {
     fn update(&mut self, ctx: &Context, frame: &mut Frame) {
+        self.handle_events(ctx);
+
         egui::containers::TopBottomPanel::top("Menu Bar").show(ctx, |ui| {
             menu_bar(self, ui, ctx);
         });
 
-        if self.test_dialog_open {
-            let mut open = true;
-            egui::Window::new("Test")
-                .open(&mut open)
-                .resizable(false)
-                .collapsible(false)
-                .show(ctx, |ui| {});
-
-            if !open {
-                self.test_dialog_open = false;
-            }
-        }
+        self.check_login_register_dialog(ctx);
     }
 }
 

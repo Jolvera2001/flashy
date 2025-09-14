@@ -8,11 +8,13 @@ use std::str::FromStr;
 mod flashy;
 mod flashy_events;
 mod models;
+mod flashy_dialogs;
+mod flashy_services;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([400.0, 600.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([600.0, 400.0]),
         ..Default::default()
     };
     let db_options =
