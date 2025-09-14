@@ -6,4 +6,5 @@ pub struct User {
     pub date_created: DateTime<Utc>,
     pub date_updated: DateTime<Utc>,
     pub name: String,
+    pub password_hash: String,
 }
