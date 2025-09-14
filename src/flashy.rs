@@ -5,6 +5,7 @@ use eframe::{App, Frame};
 use egui::Context;
 use poll_promise::Promise;
 use sqlx::SqlitePool;
+use crate::models::login_register_dto::LoginRegisterDto;
 
 pub struct Flashy {
     // connections/services/events
@@ -13,6 +14,7 @@ pub struct Flashy {
 
     // dialogs
     pub test_dialog_open: bool,
+    pub auth_form: LoginRegisterDto,
 
     // state
     pub current_user: Option<User>,
@@ -24,6 +26,7 @@ impl Flashy {
             db_pool,
             current_operation: None,
             test_dialog_open: false,
+            auth_form: LoginRegisterDto::default(),
             current_user: None,
         }
     }

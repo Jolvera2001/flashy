@@ -10,12 +10,6 @@ impl Flashy {
 
         let mut open = true;
 
-        let mut login_name = String::new();
-        let mut login_password = String::new();
-        let mut register_name = String::new();
-        let mut register_email = String::new();
-        let mut register_password = String::new();
-
         egui::Window::new("Login/Register")
             .open(&mut open)
             .resizable(true)
@@ -29,11 +23,11 @@ impl Flashy {
                         ui.add_space(10.0);
 
                         ui.label("Name:");
-                        ui.text_edit_singleline(&mut login_name);
+                        ui.text_edit_singleline(&mut self.auth_form.login_name);
                         ui.add_space(5.0);
 
                         ui.label("Password:");
-                        ui.text_edit_singleline(&mut login_password);
+                        ui.text_edit_singleline(&mut self.auth_form.login_password);
                         ui.add_space(10.0);
 
                         ui.horizontal(|ui| {
@@ -53,15 +47,15 @@ impl Flashy {
                         ui.add_space(10.0);
 
                         ui.label("Name:");
-                        ui.text_edit_singleline(&mut register_name);
+                        ui.text_edit_singleline(&mut self.auth_form.register_name);
                         ui.add_space(5.0);
 
                         ui.label("Email:");
-                        ui.text_edit_singleline(&mut register_email);
+                        ui.text_edit_singleline(&mut self.auth_form.register_email);
                         ui.add_space(5.0);
 
                         ui.label("Password:");
-                        ui.text_edit_singleline(&mut register_password);
+                        ui.text_edit_singleline(&mut self.auth_form.register_password);
                         ui.add_space(10.0);
 
                         ui.horizontal(|ui| {
