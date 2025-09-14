@@ -2,8 +2,8 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 pub struct User {
-    id: Uuid,
-    date_created: DateTime<Utc>,
-    date_updated: DateTime<Utc>,
-    name: String,
+    pub id: Uuid,
+    pub date_created: DateTime<Utc>,
+    pub date_updated: DateTime<Utc>,
+    pub name: String,
 }

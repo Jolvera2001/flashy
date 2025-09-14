@@ -1,19 +1,30 @@
+use crate::flashy_events::FlashyEvents;
+use crate::models;
+use crate::models::user::User;
 use eframe::{App, Frame};
 use egui::Context;
 use poll_promise::Promise;
 use sqlx::SqlitePool;
-use crate::flashy_events::FlashyEvents;
 
 pub struct Flashy {
+    // connections/services/events
     db_pool: SqlitePool,
-    pub current_operation: Option<Promise<FlashyEvents>>
+    pub current_operation: Option<Promise<FlashyEvents>>,
+
+    // dialogs
+    pub test_dialog_open: bool,
+
+    // state
+    pub current_user: Option<User>,
 }
 
 impl Flashy {
     pub fn new(cc: &eframe::CreationContext<'_>, db_pool: SqlitePool) -> Self {
         Self {
             db_pool,
-            current_operation: None
+            current_operation: None,
+            test_dialog_open: false,
+            current_user: None,
         }
     }
 }
@@ -21,7 +32,43 @@ impl Flashy {
 impl App for Flashy {
     fn update(&mut self, ctx: &Context, frame: &mut Frame) {
         egui::containers::TopBottomPanel::top("Menu Bar").show(ctx, |ui| {
-            ui.heading("Flashy");
+            menu_bar(self, ui, ctx);
         });
+
+        if self.test_dialog_open {
+            let mut open = true;
+            egui::Window::new("Test")
+                .open(&mut open)
+                .resizable(false)
+                .collapsible(false)
+                .show(ctx, |ui| {});
+
+            if !open {
+                self.test_dialog_open = false;
+            }
+        }
     }
+}
+
+fn menu_bar(app: &mut Flashy, ui: &mut egui::Ui, ctx: &Context) {
+    egui::MenuBar::new().ui(ui, |ui| {
+        ui.menu_button("User", |ui| {
+            if let Some(user) = &app.current_user {
+                ui.label(format!("Welcome {}", user.name));
+                ui.separator();
+                if ui.button("Overview").clicked() {
+                    // something
+                }
+                if ui.button("Logout").clicked() {
+                    app.current_user = None;
+                };
+            } else {
+                ui.label("Not logged in");
+                ui.separator();
+                if ui.button("Login").clicked() {
+                    app.test_dialog_open = true;
+                };
+            }
+        });
+    });
 }

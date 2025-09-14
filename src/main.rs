@@ -3,7 +3,6 @@ extern crate core;
 use crate::flashy::Flashy;
 use eframe::egui;
 use sqlx::SqlitePool;
-use std::env;
 use std::str::FromStr;
 
 mod flashy;

@@ -6,11 +6,11 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct Recurrence {
-    id: Uuid,
-    date_created: DateTime<Utc>,
-    date_updated: DateTime<Utc>,
-    name: String,
-    description: String,
-    amount: Decimal, // store as TEXT in sqlite
-    circulating_date: DateTime<Utc>,
+    pub id: Uuid,
+    pub date_created: DateTime<Utc>,
+    pub date_updated: DateTime<Utc>,
+    pub name: String,
+    pub description: String,
+    pub amount: Decimal, // store as TEXT in sqlite
+    pub circulating_date: DateTime<Utc>,
 }
