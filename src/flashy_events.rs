@@ -6,8 +6,8 @@ pub enum FlashyEvents {
     UserLogOut,
 
     // ui
-    DialogClosed(String),
-    DialogOpened(String),
+    DialogClosed(Dialog),
+    DialogOpened(Dialog),
     ClearFields(ClearFieldEvent),
 
     // error
@@ -18,4 +18,9 @@ pub enum ClearFieldEvent {
     LoginFields,
     RegisterFields,
     RecurrenceFields,
+}
+
+pub enum Dialog {
+    Auth,
+    Recurrence
 }

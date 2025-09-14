@@ -1,5 +1,5 @@
 use crate::flashy::Flashy;
-use crate::flashy_events::{ClearFieldEvent, FlashyEvents};
+use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
 use poll_promise::Promise;
 
 impl Flashy {
@@ -77,7 +77,7 @@ impl Flashy {
 
         if !open {
             self.current_operation = Some(Promise::spawn_async(async move {
-                FlashyEvents::DialogClosed(String::from("Login/Register"))
+                FlashyEvents::DialogClosed(Dialog::Auth)
             }));
             self.test_dialog_open = false;
         }

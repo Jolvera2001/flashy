@@ -1,5 +1,5 @@
 use crate::flashy::Flashy;
-use crate::flashy_events::{ClearFieldEvent, FlashyEvents};
+use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
 
 impl Flashy {
     pub fn handle_events(&mut self, ctx: &egui::Context) {
@@ -9,13 +9,29 @@ impl Flashy {
                     FlashyEvents::UserLogIn(user) => {},
                     FlashyEvents::UserLogOut => {},
                     FlashyEvents::DialogClosed(dialog) => {
-                        println!("{}", format!("Dialog {} was closed", dialog))
+                        match dialog {
+                            Dialog::Auth => {
+                                self.auth_form.login_name = String::new();
+                                self.auth_form.login_password = String::new();
+                                self.auth_form.register_name = String::new();
+                                self.auth_form.register_email = String::new();
+                                self.auth_form.register_password = String::new();
+                                println!("Dialog Auth closed")
+                            }
+                            Dialog::Recurrence => {
+                                println!("Dialog Recurrence closed")
+                            }
+                        }
                     }
                     FlashyEvents::DialogOpened(dialog) => {
-                        println!("{}", format!("Dialog {} was opened", dialog))
-                    }
-                    FlashyEvents::OperationFailed { operation, error } => {
-                        println!("{}", format!("Operation: {} failed with error : {}", operation, error));
+                        match dialog {
+                            Dialog::Auth => {
+                                println!("Dialog Auth opened!")
+                            }
+                            Dialog::Recurrence => {
+                                println!("Dialog Recurrence opened!")
+                            }
+                        }
                     }
                     FlashyEvents::ClearFields(clear_field_event) => {
                         match clear_field_event {
@@ -30,6 +46,9 @@ impl Flashy {
                             }
                             ClearFieldEvent::RecurrenceFields => {}
                         }
+                    }
+                    FlashyEvents::OperationFailed { operation, error } => {
+                        println!("{}", format!("Operation: {} failed with error : {}", operation, error));
                     }
                 }
                 self.current_operation = None;
