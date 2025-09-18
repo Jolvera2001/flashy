@@ -11,11 +11,7 @@ impl Flashy {
                     FlashyEvents::DialogClosed(dialog) => {
                         match dialog {
                             Dialog::Auth => {
-                                self.auth_form.login_name = String::new();
-                                self.auth_form.login_password = String::new();
-                                self.auth_form.register_name = String::new();
-                                self.auth_form.register_email = String::new();
-                                self.auth_form.register_password = String::new();
+                                self.auth_form.clear();
                                 println!("Dialog Auth closed")
                             }
                             Dialog::Recurrence => {
@@ -36,13 +32,10 @@ impl Flashy {
                     FlashyEvents::ClearFields(clear_field_event) => {
                         match clear_field_event {
                             ClearFieldEvent::LoginFields => { 
-                                self.auth_form.login_name = String::new();
-                                self.auth_form.login_password = String::new();
+                                self.auth_form.clear_login_fields();
                             }
                             ClearFieldEvent::RegisterFields => {
-                                self.auth_form.register_name = String::new();
-                                self.auth_form.register_email = String::new();
-                                self.auth_form.register_password = String::new();
+                                self.auth_form.clear_register_fields();
                             }
                             ClearFieldEvent::RecurrenceFields => {}
                         }

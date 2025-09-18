@@ -9,7 +9,8 @@ mod flashy;
 mod flashy_events;
 mod models;
 mod flashy_dialogs;
-mod flashy_services;
+mod event_handler;
+mod services;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
