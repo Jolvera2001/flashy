@@ -41,6 +41,7 @@ async fn run_migrations(pool: &SqlitePool) -> Result<(), sqlx::Error> {
             date_created TEXT NOT NULL,
             date_updated TEXT NOT NULL,
             name TEXT NOT NULL,
+            email TEXT NOT NULL,
             password_hash TEXT NOT NULL
         )
     "#,
