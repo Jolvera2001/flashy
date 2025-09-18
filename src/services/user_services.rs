@@ -7,8 +7,8 @@ pub async fn create_user(
     name: &str,
     email: &str,
     password_hash: &str,
-) -> Result<String, Error> {
-    let id = Uuid::new_v4().to_string();
+) -> Result<Uuid, Error> {
+    let id = Uuid::new_v4();
     let now = Utc::now();
 
     sqlx::query(
