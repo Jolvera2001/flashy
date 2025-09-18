@@ -11,18 +11,25 @@ pub async fn create_user(
     let id = Uuid::new_v4().to_string();
     let now = Utc::now();
 
-    sqlx::query!(
+    sqlx::query(
         "INSERT INTO users (id, date_created, date_updated, name, email, password_hash) VALUES (?, ?, ?, ?, ?, ?)",
-        id,
-        now,
-        now,
-        name,
-        email,
-        password_hash
-    ).execute(pool)
-    .await?;
+    )
+    .bind(&id)
+    .bind(&now)
+    .bind(&now)
+    .bind(&name)
+    .bind(&email)
+    .bind(&password_hash)
+    .execute(pool).await?;
 
     Ok(id)
 }
 
-// pub async fn delete_user(pool: &SqlitePool, id: &Uuid) -> Result<bool, Error> {}
+pub async fn delete_user(pool: &SqlitePool, id: &Uuid) -> Result<(), Error> {
+    sqlx::query("DELETE FROM users WHERE id = ?")
+        .bind(&id)
+        .execute(pool)
+        .await?;
+
+    Ok(())
+}
