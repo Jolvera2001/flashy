@@ -12,6 +12,6 @@ pub struct Recurrence {
     pub date_updated: DateTime<Utc>,
     pub name: String,
     pub description: String,
-    pub amount: Decimal, // store as TEXT in sqlite
+    pub amount: String,
     pub circulating_date: DateTime<Utc>,
 }

@@ -1,6 +1,7 @@
+use crate::models::recurrence::Recurrence;
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
-use sqlx::{Error, SqlitePool};
+use sqlx::{Encode, Error, SqlitePool};
 use uuid::Uuid;
 
 pub async fn create_recurrence(
@@ -28,7 +29,14 @@ pub async fn create_recurrence(
     Ok(id)
 }
 
-pub async fn get_recurrences(user_id: &Uuid) {}
+pub async fn get_recurrences(pool: &SqlitePool, user_id: &Uuid) -> Result<Vec<Recurrence>, Error> {
+    let recurrences = sqlx::query_as::<_, Recurrence>("SELECT * FROM recurrences WHERE user_id = ?")
+        .bind(&user_id)
+        .fetch_all(pool)
+        .await?;
+
+    Ok(recurrences)
+}
 
 pub async fn get_recurrence_single(id: &Uuid) {}
 

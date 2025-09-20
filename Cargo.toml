@@ -12,5 +12,5 @@ uuid = { version = "1.18.1", features = ["v4", "serde"] }
 chrono = { version = "0.4.42", features = ["serde"] }
 serde = { version = "1.0.219", features = ["derive"] }
 poll-promise = { version = "0.3.0", features = ["tokio"] }
-sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite", "macros", "chrono", "uuid"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite", "macros", "chrono", "uuid", "rust_decimal"] }
 rust_decimal = { version = "1.37.2", features = ["serde"] }
