@@ -4,7 +4,7 @@ use poll_promise::Promise;
 
 impl Flashy {
     pub fn check_login_register_dialog(&mut self, ctx: &egui::Context) {
-        if !self.test_dialog_open {
+        if !self.auth_form_dialog {
             return;
         }
 
@@ -79,7 +79,7 @@ impl Flashy {
             self.current_operation = Some(Promise::spawn_async(async move {
                 FlashyEvents::DialogClosed(Dialog::Auth)
             }));
-            self.test_dialog_open = false;
+            self.auth_form_dialog = false;
         }
     }
 }
