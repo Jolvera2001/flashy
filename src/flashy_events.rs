@@ -1,9 +1,11 @@
-use crate::models::recurrence::Recurrence;
+use std::fmt::Error;
 use crate::models::user::User;
+use chrono::NaiveDate;
 
 pub enum FlashyEvents {
     UserLogIn(User),
     UserLogOut,
+    AddRecurrence,
 
     // ui
     DialogClosed(Dialog),
@@ -11,7 +13,10 @@ pub enum FlashyEvents {
     ClearFields(ClearFieldEvent),
 
     // error
-    OperationFailed { operation: String, error: String },
+    OperationFailed {
+        operation: String,
+        error: core::fmt::Error,
+    },
 }
 
 pub enum ClearFieldEvent {
@@ -22,5 +27,5 @@ pub enum ClearFieldEvent {
 
 pub enum Dialog {
     Auth,
-    Recurrence
+    Recurrence,
 }

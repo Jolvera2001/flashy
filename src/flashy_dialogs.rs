@@ -1,7 +1,10 @@
-use egui_extras::DatePickerButton;
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
+use egui_extras::DatePickerButton;
 use poll_promise::Promise;
+use sqlx::Error;
+use uuid::Uuid;
+use crate::services::recurrence_services::create_recurrence;
 
 impl Flashy {
     pub fn check_auth_dialog(&mut self, ctx: &egui::Context) {
@@ -116,18 +119,36 @@ impl Flashy {
                             egui::DragValue::new(&mut self.recurrence_form.amount)
                                 .speed(0.01)
                                 .prefix("$")
-                                .fixed_decimals(2)
+                                .fixed_decimals(2),
                         );
 
                         ui.label("Circulating Date:");
-                        ui.add(
-                            DatePickerButton::new(&mut self.recurrence_form.circulating_date)
-                        );
+                        ui.add(DatePickerButton::new(
+                            &mut self.recurrence_form.circulating_date,
+                        ));
                         ui.add_space(10.0);
 
                         ui.horizontal(|ui| {
-                            if ui.button("Add").clicked() {}
-                            if ui.button("Clear").clicked() {}
+                            if ui.button("Add").clicked() {
+                                let name = self.recurrence_form.name.clone();
+                                let description = self.recurrence_form.description.clone();
+                                let amount = self.recurrence_form.amount;
+                                let circulating_date =
+                                    self.recurrence_form.circulating_date.clone();
+
+                                self.current_operation = Some(Promise::spawn_async(async move {
+                                    match create_recurrence().await {
+                                        Ok(id) => { FlashyEvents::AddRecurrence }
+                                        Err(e) => { FlashyEvents::OperationFailed {operation: "Add Recurrence".as_ref(), error: e } }
+                                    }
+                                }));
+                            }
+
+                            if ui.button("Clear").clicked() {
+                                self.current_operation = Some(Promise::spawn_async(async move {
+                                    FlashyEvents::ClearFields(ClearFieldEvent::RegisterFields)
+                                }));
+                            }
                         });
                     });
                 });
