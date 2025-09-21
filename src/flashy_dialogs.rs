@@ -122,9 +122,22 @@ impl Flashy {
                         ui.label("Circulating Date:");
                         ui.add(
                             DatePickerButton::new(&mut self.recurrence_form.circulating_date)
-                        )
+                        );
+                        ui.add_space(10.0);
+
+                        ui.horizontal(|ui| {
+                            if ui.button("Add").clicked() {}
+                            if ui.button("Clear").clicked() {}
+                        });
                     });
                 });
             });
+
+        if !open {
+            self.current_operation = Some(Promise::spawn_async(async move {
+                FlashyEvents::DialogClosed(Dialog::Recurrence)
+            }));
+            self.recurrence_dialog = false;
+        }
     }
 }
