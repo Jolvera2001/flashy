@@ -1,5 +1,5 @@
 #[derive(Default)]
-pub struct LoginRegisterDto {
+pub struct AuthDto {
     pub login_name: String,
     pub login_password: String,
     pub register_name: String,
@@ -7,7 +7,7 @@ pub struct LoginRegisterDto {
     pub register_password: String,
 }
 
-impl LoginRegisterDto {
+impl AuthDto {
     pub fn clear(&mut self) {
         self.login_name.clear();
         self.login_password.clear();

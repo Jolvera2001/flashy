@@ -1,3 +1,4 @@
 pub mod recurrence;
 pub mod user;
-pub mod login_register_dto;
+pub mod auth_dto;
+pub mod recurrence_dto;
