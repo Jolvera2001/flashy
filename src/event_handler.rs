@@ -11,7 +11,7 @@ impl Flashy {
                     FlashyEvents::AddRecurrence => {}
                     FlashyEvents::DialogClosed(dialog) => match dialog {
                         Dialog::Auth => {
-                            self.auth_form.clear();
+                            self.profile_form.clear();
                             println!("Dialog Auth closed")
                         }
                         Dialog::Recurrence => {
@@ -27,11 +27,8 @@ impl Flashy {
                         }
                     },
                     FlashyEvents::ClearFields(clear_field_event) => match clear_field_event {
-                        ClearFieldEvent::LoginFields => {
-                            self.auth_form.clear_login_fields();
-                        }
-                        ClearFieldEvent::RegisterFields => {
-                            self.auth_form.clear_register_fields();
+                        ClearFieldEvent::ProfileFields => {
+                            self.profile_form.clear();
                         }
                         ClearFieldEvent::RecurrenceFields => {}
                     },

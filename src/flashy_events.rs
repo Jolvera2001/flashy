@@ -20,8 +20,7 @@ pub enum FlashyEvents {
 }
 
 pub enum ClearFieldEvent {
-    LoginFields,
-    RegisterFields,
+    ProfileFields,
     RecurrenceFields,
 }
 

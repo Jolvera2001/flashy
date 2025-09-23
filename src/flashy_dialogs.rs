@@ -1,8 +1,8 @@
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
+use crate::services::recurrence_services::create_recurrence;
 use egui_extras::DatePickerButton;
 use poll_promise::Promise;
-use crate::services::recurrence_services::create_recurrence;
 
 impl Flashy {
     pub fn check_auth_dialog(&mut self, ctx: &egui::Context) {
@@ -17,7 +17,7 @@ impl Flashy {
             .resizable(true)
             .default_height(500.0)
             .show(ctx, |ui| {
-                ui.columns(2, |columns| {
+                ui.columns(1, |columns| {
                     columns[0].group(|ui| {
                         ui.vertical_centered(|ui| {
                             ui.heading("Login");
@@ -25,51 +25,21 @@ impl Flashy {
                         ui.add_space(10.0);
 
                         ui.label("Name:");
-                        ui.text_edit_singleline(&mut self.auth_form.login_name);
+                        ui.text_edit_singleline(&mut self.profile_form.name);
                         ui.add_space(5.0);
 
-                        ui.label("Password:");
-                        ui.text_edit_singleline(&mut self.auth_form.login_password);
+                        ui.label("Description:");
+                        ui.text_edit_singleline(&mut self.profile_form.description);
                         ui.add_space(10.0);
 
                         ui.horizontal(|ui| {
-                            if ui.button("Login").clicked() {
+                            if ui.button("Add Profile").clicked() {
                                 // login operation
                             }
 
                             if ui.button("Clear").clicked() {
                                 self.current_operation = Some(Promise::spawn_async(async move {
-                                    FlashyEvents::ClearFields(ClearFieldEvent::LoginFields)
-                                }));
-                            }
-                        });
-                    });
-                    columns[1].group(|ui| {
-                        ui.vertical_centered(|ui| {
-                            ui.heading("Register");
-                        });
-                        ui.add_space(10.0);
-
-                        ui.label("Name:");
-                        ui.text_edit_singleline(&mut self.auth_form.register_name);
-                        ui.add_space(5.0);
-
-                        ui.label("Email:");
-                        ui.text_edit_singleline(&mut self.auth_form.register_email);
-                        ui.add_space(5.0);
-
-                        ui.label("Password:");
-                        ui.text_edit_singleline(&mut self.auth_form.register_password);
-                        ui.add_space(10.0);
-
-                        ui.horizontal(|ui| {
-                            if ui.button("Register").clicked() {
-                                // register operation
-                            }
-
-                            if ui.button("Clear").clicked() {
-                                self.current_operation = Some(Promise::spawn_async(async move {
-                                    FlashyEvents::ClearFields(ClearFieldEvent::RegisterFields)
+                                    FlashyEvents::ClearFields(ClearFieldEvent::ProfileFields)
                                 }));
                             }
                         });
@@ -86,7 +56,7 @@ impl Flashy {
     }
 
     pub fn check_recurrence_dialog(&mut self, ctx: &egui::Context) {
-        if !self.recurrence_dialog || self.current_user.is_none() {
+        if !self.recurrence_dialog || self.current_profile.is_none() {
             return;
         }
 
@@ -136,8 +106,11 @@ impl Flashy {
 
                                 self.current_operation = Some(Promise::spawn_async(async move {
                                     match create_recurrence().await {
-                                        Ok(id) => { FlashyEvents::AddRecurrence }
-                                        Err(e) => { FlashyEvents::OperationFailed {operation: "Add Recurrence".as_ref(), error: e } }
+                                        Ok(id) => FlashyEvents::AddRecurrence,
+                                        Err(e) => FlashyEvents::OperationFailed {
+                                            operation: "Add Recurrence".as_ref(),
+                                            error: e,
+                                        },
                                     }
                                 }));
                             }

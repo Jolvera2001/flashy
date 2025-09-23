@@ -1,2 +1,2 @@
-pub mod user_services;
+pub mod profile_services;
 pub mod recurrence_services;

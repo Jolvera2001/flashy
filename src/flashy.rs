@@ -1,5 +1,4 @@
 use crate::flashy_events::FlashyEvents;
-use crate::models::user::User;
 use eframe::{App, Frame};
 use egui::{Context, Ui};
 use poll_promise::Promise;
@@ -17,11 +16,10 @@ pub struct Flashy {
     // dialogs/forms
     pub auth_form_dialog: bool,
     pub recurrence_dialog: bool,
-    pub auth_form: ProfileDto,
+    pub profile_form: ProfileDto,
     pub recurrence_form: RecurrenceDto,
 
     // state
-    pub current_user: Option<User>,
     pub current_profile: Option<Profile>,
     pub recurrences: Option<Vec<Recurrence>>,
     pub chosen_recurrence: Option<Recurrence>,
@@ -34,9 +32,8 @@ impl Flashy {
             current_operation: None,
             auth_form_dialog: false,
             recurrence_dialog: false,
-            auth_form: ProfileDto::default(),
+            profile_form: ProfileDto::default(),
             recurrence_form: RecurrenceDto::default(),
-            current_user: None,
             current_profile: None,
             recurrences: None,
             chosen_recurrence: None,
@@ -46,14 +43,14 @@ impl Flashy {
     pub fn menu_bar(&mut self, ui: &mut Ui, ctx: &Context) {
         egui::MenuBar::new().ui(ui, |ui| {
             ui.menu_button("User", |ui| {
-                if let Some(user) = &self.current_user {
+                if let Some(user) = &self.current_profile {
                     ui.label(format!("Welcome {}", user.name));
                     ui.separator();
                     if ui.button("Overview").clicked() {
                         // something
                     }
                     if ui.button("Logout").clicked() {
-                        self.current_user = None;
+                        self.current_profile = None;
                     };
                 } else {
                     ui.label("Not logged in");

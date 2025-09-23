@@ -2,20 +2,18 @@ use chrono::Utc;
 use sqlx::{Error, SqlitePool};
 use uuid::Uuid;
 
-pub async fn create_user(
-    pool: &SqlitePool,
-    name: &str,
-) -> Result<Uuid, Error> {
+pub async fn create_user(pool: &SqlitePool, name: &str, description: &str) -> Result<Uuid, Error> {
     let id = Uuid::new_v4();
     let now = Utc::now();
 
     sqlx::query(
-        "INSERT INTO profiles (id, date_created, date_updated, name) VALUES (?, ?, ?, ?)",
+        "INSERT INTO profiles (id, date_created, date_updated, name, description) VALUES (?, ?, ?, ?)",
     )
     .bind(&id)
     .bind(&now)
     .bind(&now)
     .bind(&name)
+    .bind(&description)
     .execute(pool).await?;
 
     Ok(id)
