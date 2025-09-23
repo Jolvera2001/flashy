@@ -3,14 +3,14 @@ use eframe::{App, Frame};
 use egui::{Context, Ui};
 use poll_promise::Promise;
 use sqlx::SqlitePool;
-use crate::models::auth_dto::ProfileDto;
+use crate::models::profile_dto::ProfileDto;
 use crate::models::profile::Profile;
 use crate::models::recurrence::Recurrence;
 use crate::models::recurrence_dto::RecurrenceDto;
 
 pub struct Flashy {
     // connections/services/events
-    db_pool: SqlitePool,
+    pub db_pool: SqlitePool,
     pub current_operation: Option<Promise<FlashyEvents>>,
 
     // dialogs/forms

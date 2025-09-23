@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
 use crate::services::recurrence_services::create_recurrence;
@@ -105,7 +106,16 @@ impl Flashy {
                                     self.recurrence_form.circulating_date.clone();
 
                                 self.current_operation = Some(Promise::spawn_async(async move {
-                                    match create_recurrence().await {
+                                    match create_recurrence(
+                                        &self.db_pool,
+                                        &self.current_profile.unwrap().id,
+                                        &self.recurrence_form.name,
+                                        &self.recurrence_form.description,
+                                        &self.recurrence_form.amount,
+                                        &self.recurrence_form.get_recurrence_date_time()
+                                    )
+                                    .await
+                                    {
                                         Ok(id) => FlashyEvents::AddRecurrence,
                                         Err(e) => FlashyEvents::OperationFailed {
                                             operation: "Add Recurrence".as_ref(),

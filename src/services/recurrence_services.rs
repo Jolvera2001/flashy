@@ -1,17 +1,18 @@
 use crate::models::recurrence::Recurrence;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
 use rust_decimal::Decimal;
 use sqlx::{Error, SqlitePool};
 use uuid::Uuid;
 
 pub async fn create_recurrence(
     pool: &SqlitePool,
-    user_id: Uuid,
-    name: String,
-    description: String,
-    amount: Decimal,
-    circulating_date: DateTime<Utc>,
+    user_id: &Uuid,
+    name: &str,
+    description: &str,
+    amount: &f64,
+    circulating_date: &DateTime<Utc>,
 ) -> Result<Uuid, Error> {
+    let dec_amount = Decimal::from_f64_retain(*amount).unwrap();
     let id = Uuid::new_v4();
     let now = Utc::now();
 
@@ -22,7 +23,7 @@ pub async fn create_recurrence(
         .bind(&now)
         .bind(&name)
         .bind(&description)
-        .bind(&amount.to_string())
+        .bind(&amount)
         .bind(&circulating_date)
         .execute(pool).await?;
 
@@ -50,10 +51,10 @@ pub async fn get_recurrence_single(pool: &SqlitePool, id: &Uuid) -> Result<Recur
 
 pub async fn update_recurrence(
     pool: &SqlitePool,
-    name: String,
-    description: String,
-    amount: Decimal,
-    circulating_date: DateTime<Utc>,
+    name: &str,
+    description: &str,
+    amount: &f64,
+    circulating_date: &DateTime<Utc>,
 ) -> Result<(), Error> {
     sqlx::query("UPDATE recurrences SET name = ?, description = ?, amount = ?, circulating_date = ? WHERE id = ?", ).bind(&name)
     .bind(&description)
