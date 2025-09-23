@@ -4,7 +4,8 @@ use eframe::{App, Frame};
 use egui::{Context, Ui};
 use poll_promise::Promise;
 use sqlx::SqlitePool;
-use crate::models::auth_dto::AuthDto;
+use crate::models::auth_dto::ProfileDto;
+use crate::models::profile::Profile;
 use crate::models::recurrence::Recurrence;
 use crate::models::recurrence_dto::RecurrenceDto;
 
@@ -16,11 +17,12 @@ pub struct Flashy {
     // dialogs/forms
     pub auth_form_dialog: bool,
     pub recurrence_dialog: bool,
-    pub auth_form: AuthDto,
+    pub auth_form: ProfileDto,
     pub recurrence_form: RecurrenceDto,
 
     // state
     pub current_user: Option<User>,
+    pub current_profile: Option<Profile>,
     pub recurrences: Option<Vec<Recurrence>>,
     pub chosen_recurrence: Option<Recurrence>,
 }
@@ -32,9 +34,10 @@ impl Flashy {
             current_operation: None,
             auth_form_dialog: false,
             recurrence_dialog: false,
-            auth_form: AuthDto::default(),
+            auth_form: ProfileDto::default(),
             recurrence_form: RecurrenceDto::default(),
             current_user: None,
+            current_profile: None,
             recurrences: None,
             chosen_recurrence: None,
         }

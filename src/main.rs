@@ -36,13 +36,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 async fn run_migrations(pool: &SqlitePool) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS profiles (
             id TEXT PRIMARY KEY,
             date_created TEXT NOT NULL,
             date_updated TEXT NOT NULL,
             name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            password_hash TEXT NOT NULL
+            description TEXT NOT NULL
         )
     "#,
     )
@@ -53,14 +52,14 @@ async fn run_migrations(pool: &SqlitePool) -> Result<(), sqlx::Error> {
         r#"
         CREATE TABLE IF NOT EXISTS recurrences (
             id TEXT PRIMARY KEY,
-            user_id TEXT NOT NULL,
+            profile_id TEXT NOT NULL,
             date_created TEXT NOT NULL,
             date_updated TEXT NOT NULL,
             name TEXT NOT NULL,
             description TEXT NOT NULL,
             amount TEXT NOT NULL,
             circulating_date TEXT NOT NULL,
-            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+            FOREIGN KEY(profile_id) REFERENCES profiles(id) ON DELETE CASCADE
         )
     "#,
     )

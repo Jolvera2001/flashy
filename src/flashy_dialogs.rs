@@ -2,8 +2,6 @@ use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
 use egui_extras::DatePickerButton;
 use poll_promise::Promise;
-use sqlx::Error;
-use uuid::Uuid;
 use crate::services::recurrence_services::create_recurrence;
 
 impl Flashy {
