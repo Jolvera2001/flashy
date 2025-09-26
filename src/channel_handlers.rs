@@ -53,6 +53,8 @@ impl Flashy {
         event_sender: &mut Sender<FlashyEvents>,
     ) {
         while let Some(command) = command_receiver.recv().await {
+            // TODO: Move business logic here instead of within UI
+            // Ui can call channel sender in order to handle commands
             match command {}
         }
     }
