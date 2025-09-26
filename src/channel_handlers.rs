@@ -1,5 +1,7 @@
 use crate::flashy::Flashy;
-use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
+use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, FlashyEvents};
+use sqlx::SqlitePool;
+use tokio::sync::mpsc::{Receiver, Sender};
 
 impl Flashy {
     pub fn handle_events(&mut self, ctx: &egui::Context) {
@@ -43,6 +45,15 @@ impl Flashy {
             } else {
                 println!("Promise not ready yet")
             }
+        }
+    }
+
+    pub async fn handle_commands(
+        command_receiver: &mut Receiver<Commands>,
+        event_sender: &mut Sender<FlashyEvents>,
+    ) {
+        while let Some(command) = command_receiver.recv().await {
+            match command {}
         }
     }
 }

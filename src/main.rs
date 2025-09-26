@@ -9,7 +9,7 @@ mod flashy;
 mod flashy_events;
 mod models;
 mod flashy_dialogs;
-mod event_handler;
+mod channel_handlers;
 mod services;
 
 #[tokio::main]
