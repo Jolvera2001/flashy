@@ -1,6 +1,5 @@
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, FlashyEvents};
-use sqlx::SqlitePool;
 use tokio::sync::mpsc::{Receiver, Sender};
 
 impl Flashy {
