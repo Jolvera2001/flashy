@@ -1,7 +1,5 @@
-use chrono::{DateTime, Utc};
 use crate::flashy::Flashy;
-use crate::flashy_events::{ClearFieldEvent, Dialog, FlashyEvents};
-use crate::services::recurrence_services::create_recurrence;
+use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
 use egui_extras::DatePickerButton;
 use poll_promise::Promise;
 
@@ -21,7 +19,7 @@ impl Flashy {
                 ui.columns(1, |columns| {
                     columns[0].group(|ui| {
                         ui.vertical_centered(|ui| {
-                            ui.heading("Login");
+                            ui.heading("Create Profile");
                         });
                         ui.add_space(10.0);
 
@@ -40,7 +38,7 @@ impl Flashy {
 
                             if ui.button("Clear").clicked() {
                                 self.current_operation = Some(Promise::spawn_async(async move {
-                                    FlashyEvents::ClearFields(ClearFieldEvent::ProfileFields)
+                                    StateEvent::ClearFields(ClearFieldEvent::ProfileFields)
                                 }));
                             }
                         });
@@ -50,7 +48,7 @@ impl Flashy {
 
         if !open {
             self.current_operation = Some(Promise::spawn_async(async move {
-                FlashyEvents::DialogClosed(Dialog::Auth)
+                StateEvent::DialogClosed(Dialog::Auth)
             }));
             self.auth_form_dialog = false;
         }
@@ -99,37 +97,27 @@ impl Flashy {
 
                         ui.horizontal(|ui| {
                             if ui.button("Add").clicked() {
+                                let profile_id = self.current_profile.as_ref().unwrap().id.clone();
                                 let name = self.recurrence_form.name.clone();
                                 let description = self.recurrence_form.description.clone();
                                 let amount = self.recurrence_form.amount;
-                                let circulating_date =
-                                    self.recurrence_form.circulating_date.clone();
 
-                                self.current_operation = Some(Promise::spawn_async(async move {
-                                    match create_recurrence(
-                                        &self.db_pool,
-                                        &self.current_profile.unwrap().id,
-                                        &self.recurrence_form.name,
-                                        &self.recurrence_form.description,
-                                        &self.recurrence_form.amount,
-                                        &self.recurrence_form.get_recurrence_date_time()
-                                    )
-                                    .await
-                                    {
-                                        Ok(id) => FlashyEvents::AddRecurrence,
-                                        Err(e) => FlashyEvents::OperationFailed {
-                                            operation: "Add Recurrence".as_ref(),
-                                            error: e,
-                                        },
-                                    }
-                                }));
-                            }
+                                if let Err(e) = self.command_channel.try_send(Commands::AddRecurrence {
+                                    profile_id,
+                                    name,
+                                    description,
+                                    amount,
+                                    circulating_date: self
+                                        .recurrence_form
+                                        .get_recurrence_date_time(),
+                                }) {
+                                    eprintln!("Failed to send command: {}", e);
+                                }
+                            };
 
                             if ui.button("Clear").clicked() {
-                                self.current_operation = Some(Promise::spawn_async(async move {
-                                    FlashyEvents::ClearFields(ClearFieldEvent::RegisterFields)
-                                }));
-                            }
+                                
+                            };
                         });
                     });
                 });
@@ -137,7 +125,7 @@ impl Flashy {
 
         if !open {
             self.current_operation = Some(Promise::spawn_async(async move {
-                FlashyEvents::DialogClosed(Dialog::Recurrence)
+                StateEvent::DialogClosed(Dialog::Recurrence)
             }));
             self.recurrence_dialog = false;
         }

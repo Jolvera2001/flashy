@@ -1,11 +1,25 @@
-use crate::models::user::User;
+use chrono::{DateTime, Utc};
+use uuid::Uuid;
+use crate::models::profile::Profile;
 
+#[derive(Clone)]
 pub enum Commands {
-
+    AddProfile {
+        name: String,
+        description: String,
+    },
+    AddRecurrence {
+        profile_id: Uuid,
+        name: String,
+        description: String,
+        amount: f64,
+        circulating_date: DateTime<Utc>,
+    },
 }
 
-pub enum FlashyEvents {
-    UserLogIn(User),
+#[derive(Clone)]
+pub enum StateEvent {
+    UserLogIn(Profile),
     UserLogOut,
     AddRecurrence,
 
@@ -21,11 +35,13 @@ pub enum FlashyEvents {
     },
 }
 
+#[derive(Clone)]
 pub enum ClearFieldEvent {
     ProfileFields,
     RecurrenceFields,
 }
 
+#[derive(Clone)]
 pub enum Dialog {
     Auth,
     Recurrence,
