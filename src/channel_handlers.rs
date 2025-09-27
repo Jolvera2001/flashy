@@ -15,6 +15,7 @@ impl Flashy {
                         println!("Dialog Auth closed")
                     }
                     Dialog::Recurrence => {
+                        self.recurrence_form.clear();
                         println!("Dialog Recurrence closed")
                     }
                 },

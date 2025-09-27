@@ -33,13 +33,24 @@ impl Flashy {
 
                         ui.horizontal(|ui| {
                             if ui.button("Add Profile").clicked() {
-                                // login operation
+                                let name = self.profile_form.name.clone();
+                                let description = self.profile_form.description.clone();
+
+                                if let Err(e) = self
+                                    .command_channel
+                                    .send(Commands::AddProfile { name, description })
+                                {
+                                    eprintln!("Failed to send command: {}", e);
+                                }
                             }
 
                             if ui.button("Clear").clicked() {
-                                self.current_operation = Some(Promise::spawn_async(async move {
-                                    StateEvent::ClearFields(ClearFieldEvent::ProfileFields)
-                                }));
+                                if let Err(e) = self
+                                    .event_channel_sender
+                                    .send(StateEvent::ClearFields(ClearFieldEvent::ProfileFields))
+                                {
+                                    eprintln!("Failed to send command: {}", e);
+                                }
                             }
                         });
                     });
@@ -102,7 +113,7 @@ impl Flashy {
                                 let description = self.recurrence_form.description.clone();
                                 let amount = self.recurrence_form.amount;
 
-                                if let Err(e) = self.command_channel.try_send(Commands::AddRecurrence {
+                                if let Err(e) = self.command_channel.send(Commands::AddRecurrence {
                                     profile_id,
                                     name,
                                     description,
@@ -116,7 +127,11 @@ impl Flashy {
                             };
 
                             if ui.button("Clear").clicked() {
-                                
+                                if let Err(e) = self.event_channel_sender.send(
+                                    StateEvent::ClearFields(ClearFieldEvent::RecurrenceFields),
+                                ) {
+                                    eprintln!("Failed to send command: {}", e);
+                                }
                             };
                         });
                     });
@@ -124,9 +139,12 @@ impl Flashy {
             });
 
         if !open {
-            self.current_operation = Some(Promise::spawn_async(async move {
-                StateEvent::DialogClosed(Dialog::Recurrence)
-            }));
+            if let Err(e) = self
+                .event_channel_sender
+                .send(StateEvent::DialogClosed(Dialog::Auth))
+            {
+                eprintln!("Failed to send command: {}", e);
+            }
             self.recurrence_dialog = false;
         }
     }
