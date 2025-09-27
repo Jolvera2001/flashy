@@ -9,7 +9,6 @@ pub enum Commands {
         description: String,
     },
     AddRecurrence {
-        profile_id: Uuid,
         name: String,
         description: String,
         amount: f64,

@@ -2,7 +2,7 @@ use chrono::Utc;
 use sqlx::{Error, SqlitePool};
 use uuid::Uuid;
 
-pub async fn create_user(pool: &SqlitePool, name: &str, description: &str) -> Result<Uuid, Error> {
+pub async fn create_profile(pool: &SqlitePool, name: &str, description: &str) -> Result<Uuid, Error> {
     let id = Uuid::new_v4();
     let now = Utc::now();
 
@@ -19,7 +19,7 @@ pub async fn create_user(pool: &SqlitePool, name: &str, description: &str) -> Re
     Ok(id)
 }
 
-pub async fn delete_user(pool: &SqlitePool, id: &Uuid) -> Result<(), Error> {
+pub async fn delete_profile(pool: &SqlitePool, id: &Uuid) -> Result<(), Error> {
     sqlx::query("DELETE FROM profiles WHERE id = ?")
         .bind(&id)
         .execute(pool)

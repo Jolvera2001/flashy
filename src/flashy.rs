@@ -1,14 +1,14 @@
 use crate::flashy_events::{Commands, StateEvent};
+use crate::models::profile::Profile;
+use crate::models::profile_dto::ProfileDto;
+use crate::models::recurrence::Recurrence;
+use crate::models::recurrence_dto::RecurrenceDto;
 use eframe::{App, Frame};
 use egui::{Context, Ui};
 use poll_promise::Promise;
 use sqlx::SqlitePool;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::{Receiver, Sender};
-use crate::models::profile_dto::ProfileDto;
-use crate::models::profile::Profile;
-use crate::models::recurrence::Recurrence;
-use crate::models::recurrence_dto::RecurrenceDto;
 
 pub struct Flashy {
     // connections/services/events/channels
@@ -36,9 +36,8 @@ impl Flashy {
         let (mut event_tx, event_rx) = broadcast::channel::<StateEvent>(30);
         let internal_ref = event_tx.clone();
 
-
         tokio::spawn(async move {
-            Self::handle_commands(&mut command_rx, &mut event_tx).await;
+            Self::handle_commands(&mut command_rx, &mut event_tx).await; // TODO: Move sqlite pool into this method and restructure Commands enums
         });
 
         Self {

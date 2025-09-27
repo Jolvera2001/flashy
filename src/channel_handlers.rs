@@ -1,10 +1,12 @@
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
+use crate::services::profile_services::create_profile;
+use crate::services::recurrence_services::create_recurrence;
 use tokio::sync::broadcast::{Receiver, Sender};
 
 impl Flashy {
-    pub async fn handle_events(&mut self, ctx: &egui::Context) {
-        while let Ok(state_event) = &self.event_channel_receiver.recv().await {
+    pub fn handle_events(&mut self, ctx: &egui::Context) {
+        while let Ok(state_event) = &self.event_channel_receiver.try_recv() {
             match state_event {
                 StateEvent::UserLogIn(profile) => {}
                 StateEvent::UserLogOut => {}
@@ -45,6 +47,7 @@ impl Flashy {
     }
 
     pub async fn handle_commands(
+        &self,
         command_receiver: &mut Receiver<Commands>,
         event_sender: &mut Sender<StateEvent>,
     ) {
@@ -52,8 +55,33 @@ impl Flashy {
             // TODO: Move business logic here instead of within UI
             // Ui can call channel sender in order to handle commands
             match command {
-                Commands::AddProfile { .. } => {}
-                Commands::AddRecurrence { .. } => {}
+                Commands::AddProfile { name, description } => {
+                    match create_profile(&self.db_pool, &name, &description).await {
+                        Ok(_) => {}
+                        Err(_) => {}
+                    };
+                }
+                Commands::AddRecurrence {
+                    name,
+                    description,
+                    amount,
+                    circulating_date,
+                } => {
+                    let profile_id = &self.current_profile.as_ref().unwrap().id;
+
+                    match create_recurrence(
+                        &self.db_pool,
+                        profile_id,
+                        &name,
+                        &description,
+                        &amount,
+                        &circulating_date,
+                    )
+                    .await {
+                        Ok(_) => {}
+                        Err(_) => {}
+                    }
+                }
             }
         }
     }

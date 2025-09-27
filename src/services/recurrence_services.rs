@@ -6,19 +6,18 @@ use uuid::Uuid;
 
 pub async fn create_recurrence(
     pool: &SqlitePool,
-    user_id: &Uuid,
+    profile_id: &Uuid,
     name: &str,
     description: &str,
     amount: &f64,
     circulating_date: &DateTime<Utc>,
 ) -> Result<Uuid, Error> {
-    let dec_amount = Decimal::from_f64_retain(*amount).unwrap();
     let id = Uuid::new_v4();
     let now = Utc::now();
 
-    sqlx::query("INSERT INTO recurrences (id, user_id, date_created, date_updated, name, description, amount, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+    sqlx::query("INSERT INTO recurrences (id, profile_id, date_created, date_updated, name, description, amount, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
         .bind(&id)
-        .bind(&user_id)
+        .bind(&profile_id)
         .bind(&now)
         .bind(&now)
         .bind(&name)
