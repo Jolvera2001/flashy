@@ -1,6 +1,5 @@
 use crate::models::recurrence::Recurrence;
-use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
-use rust_decimal::Decimal;
+use chrono::{DateTime, Utc};
 use sqlx::{Error, SqlitePool};
 use uuid::Uuid;
 
