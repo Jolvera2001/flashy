@@ -9,6 +9,7 @@ use poll_promise::Promise;
 use sqlx::SqlitePool;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::{Receiver, Sender};
+use crate::channel_handlers::handle_commands;
 
 pub struct Flashy {
     // connections/services/events/channels
@@ -36,8 +37,9 @@ impl Flashy {
         let (mut event_tx, event_rx) = broadcast::channel::<StateEvent>(30);
         let internal_ref = event_tx.clone();
 
+        let db_clone = db_pool.clone();
         tokio::spawn(async move {
-            Self::handle_commands(&mut command_rx, &mut event_tx).await; // TODO: Move sqlite pool into this method and restructure Commands enums
+            handle_commands(db_clone, &mut command_rx, &mut event_tx).await; // TODO: Move sqlite pool into this method and restructure Commands enums
         });
 
         Self {
@@ -54,6 +56,7 @@ impl Flashy {
             recurrences: None,
             chosen_recurrence: None,
         }
+
     }
 
     pub fn menu_bar(&mut self, ui: &mut Ui, ctx: &Context) {

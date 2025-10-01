@@ -114,6 +114,7 @@ impl Flashy {
                                 let amount = self.recurrence_form.amount;
 
                                 if let Err(e) = self.command_channel.send(Commands::AddRecurrence {
+                                    profile_id,
                                     name,
                                     description,
                                     amount,

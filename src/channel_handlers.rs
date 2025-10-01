@@ -1,3 +1,4 @@
+use sqlx::SqlitePool;
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
 use crate::services::profile_services::create_profile;
@@ -45,42 +46,42 @@ impl Flashy {
             self.current_operation = None;
         }
     }
+}
 
-    pub async fn handle_commands(
-        &self,
-        command_receiver: &mut Receiver<Commands>,
-        event_sender: &mut Sender<StateEvent>,
-    ) {
-        while let Ok(command) = command_receiver.recv().await {
-            // TODO: Move business logic here instead of within UI
-            // Ui can call channel sender in order to handle commands
-            match command {
-                Commands::AddProfile { name, description } => {
-                    match create_profile(&self.db_pool, &name, &description).await {
-                        Ok(_) => {}
-                        Err(_) => {}
-                    };
-                }
-                Commands::AddRecurrence {
-                    name,
-                    description,
-                    amount,
-                    circulating_date,
-                } => {
-                    let profile_id = &self.current_profile.as_ref().unwrap().id;
+pub async fn handle_commands(
+    db_pool: SqlitePool,
+    command_receiver: &mut Receiver<Commands>,
+    event_sender: &mut Sender<StateEvent>,
+) {
+    while let Ok(command) = command_receiver.recv().await {
+        // TODO: Move business logic here instead of within UI
+        // Ui can call channel sender in order to handle commands
+        match command {
+            Commands::AddProfile { name, description } => {
+                match create_profile(&db_pool, &name, &description).await {
+                    Ok(_) => {}
+                    Err(_) => {}
+                };
+            }
+            Commands::AddRecurrence {
+                profile_id,
+                name,
+                description,
+                amount,
+                circulating_date,
+            } => {
 
-                    match create_recurrence(
-                        &self.db_pool,
-                        profile_id,
-                        &name,
-                        &description,
-                        &amount,
-                        &circulating_date,
-                    )
+                match create_recurrence(
+                    &db_pool,
+                    &profile_id,
+                    &name,
+                    &description,
+                    &amount,
+                    &circulating_date,
+                )
                     .await {
-                        Ok(_) => {}
-                        Err(_) => {}
-                    }
+                    Ok(_) => {}
+                    Err(_) => {}
                 }
             }
         }
