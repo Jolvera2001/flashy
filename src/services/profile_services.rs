@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::models::profile::Profile;
 
 pub async fn get_profiles(pool: &SqlitePool) -> Result<Vec<Profile>, Error> {
-    let profiles = sqlx::query_as::<_, Profile>("SELECT * FROM Profile")
+    let profiles = sqlx::query_as::<_, Profile>("SELECT * FROM profiles")
     .fetch_all(pool).await?;
 
     Ok(profiles)

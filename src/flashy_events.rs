@@ -24,6 +24,7 @@ pub enum Commands {
 
 #[derive(Clone)]
 pub enum StateEvent {
+    ProfilesFetched(Vec<Profile>),
     ProfileCreated(Profile),
     ProfileSelected(Profile),
     ProfileDeselected,

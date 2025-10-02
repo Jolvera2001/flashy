@@ -1,9 +1,7 @@
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
-use crate::models::profile::Profile;
 use egui::ScrollArea;
 use egui_extras::DatePickerButton;
-use poll_promise::Promise;
 
 impl Flashy {
     pub fn check_auth_dialog(&mut self, ctx: &egui::Context) {
@@ -60,6 +58,9 @@ impl Flashy {
                         ui.vertical_centered(|ui| {
                             if self.profiles.is_none() {
                                 ui.heading("Fetching Profiles...");
+                                if let Err(e) = self.command_channel.send(Commands::GetProfiles) {
+                                    eprintln!("Failed to send command: {}", e);
+                                };
                             } else {
                                 ScrollArea::vertical().show(ui, |ui| {
                                     if let Some(profiles) = &self.profiles {

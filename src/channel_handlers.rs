@@ -1,6 +1,6 @@
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
-use crate::services::profile_services::create_profile;
+use crate::services::profile_services::{create_profile, get_profiles};
 use crate::services::recurrence_services::{create_recurrence, get_recurrences};
 use sqlx::SqlitePool;
 use tokio::sync::broadcast::{Receiver, Sender};
@@ -9,6 +9,9 @@ impl Flashy {
     pub fn handle_events(&mut self, ctx: &egui::Context) {
         while let Ok(state_event) = &self.event_channel_receiver.try_recv() {
             match state_event {
+                StateEvent::ProfilesFetched(profiles) => {
+                    self.profiles = Option::from(profiles.clone());
+                }
                 StateEvent::ProfileCreated(profile) => {
                     self.current_profile = Option::from(profile.clone());
                 }
@@ -65,7 +68,19 @@ pub async fn handle_commands(
 ) {
     while let Ok(command) = command_receiver.recv().await {
         match command {
-            Commands::GetProfiles => {}
+            Commands::GetProfiles => match get_profiles(&db_pool).await {
+                Ok(profiles) => {
+                    let event = StateEvent::ProfilesFetched(profiles);
+                    let _ = event_sender.send(event);
+                }
+                Err(e) => {
+                    let event = StateEvent::OperationFailed {
+                        operation: "Getting profiles failed!".to_string(),
+                        error: e.to_string(),
+                    };
+                    let _ = event_sender.send(event);
+                }
+            },
             Commands::GetRecurrences { profile_id } => {
                 match get_recurrences(&db_pool, &profile_id).await {
                     Ok(recurrences) => {
