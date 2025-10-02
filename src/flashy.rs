@@ -72,7 +72,7 @@ impl Flashy {
                         // something
                     }
                     if ui.button("Logout").clicked() {
-                        self.current_profile = None;
+                        self.current_profile = None; // TODO: change to use stateEvents instead
                     };
                 } else {
                     ui.label("Not logged in");
@@ -84,6 +84,8 @@ impl Flashy {
             });
         });
     }
+
+    pub fn bottom_bar(&mut self, ui: &mut Ui, ctx: &Context) {}
 }
 
 impl App for Flashy {
@@ -92,6 +94,12 @@ impl App for Flashy {
 
         egui::containers::TopBottomPanel::top("Menu Bar").show(ctx, |ui| {
             self.menu_bar(ui, ctx);
+        });
+
+        // TODO: Figure out if we should use tabs or have some sort of internal paging going on
+
+        egui::containers::TopBottomPanel::bottom("Info Bar").show(ctx, |ui| {
+            self.bottom_bar(ui, ctx);
         });
 
         self.check_auth_dialog(ctx);
