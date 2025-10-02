@@ -9,9 +9,18 @@ impl Flashy {
     pub fn handle_events(&mut self, ctx: &egui::Context) {
         while let Ok(state_event) = &self.event_channel_receiver.try_recv() {
             match state_event {
-                StateEvent::ProfileCreated(id) => {}
-                StateEvent::ProfileSelected(id) => {}
-                StateEvent::ProfileDeselected => {}
+                StateEvent::ProfileCreated(profile) => {
+                    self.current_profile = Option::from(profile.clone());
+                }
+                StateEvent::ProfileSelected(profile) => {
+                    self.current_profile = Option::from(profile.clone());
+                }
+                StateEvent::ProfileDeselected => {
+                    self.current_profile = None;
+                }
+                StateEvent::GetRecurrences(recurrences) => {
+                    self.recurrences = Option::from(recurrences.clone());
+                }
                 StateEvent::AddRecurrence(x) => {}
                 StateEvent::DialogClosed(dialog) => match dialog {
                     Dialog::Auth => {
@@ -59,8 +68,17 @@ pub async fn handle_commands(
             Commands::GetProfiles => {}
             Commands::GetRecurrences { profile_id } => {
                 match get_recurrences(&db_pool, &profile_id).await {
-                    Ok(recurrences) => {}
-                    Err(e) => {}
+                    Ok(recurrences) => {
+                        let event = StateEvent::GetRecurrences(recurrences);
+                        let _ = event_sender.send(event);
+                    }
+                    Err(e) => {
+                        let event = StateEvent::OperationFailed {
+                            operation: "Get Recurrences failed!".to_string(),
+                            error: e.to_string(),
+                        };
+                        let _ = event_sender.send(event);
+                    }
                 }
             }
             Commands::AddProfile { name, description } => {
