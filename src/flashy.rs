@@ -1,3 +1,4 @@
+use crate::channel_handlers::handle_commands;
 use crate::flashy_events::{Commands, StateEvent};
 use crate::models::profile::Profile;
 use crate::models::profile_dto::ProfileDto;
@@ -9,7 +10,6 @@ use poll_promise::Promise;
 use sqlx::SqlitePool;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::{Receiver, Sender};
-use crate::channel_handlers::handle_commands;
 
 pub struct Flashy {
     // connections/services/events/channels
@@ -20,12 +20,14 @@ pub struct Flashy {
     pub event_channel_receiver: Receiver<StateEvent>,
 
     // dialogs/forms
-    pub auth_form_dialog: bool,
+    pub profile_form_dialog: bool,
     pub recurrence_dialog: bool,
     pub profile_form: ProfileDto,
+    pub selected_profile: Option<Profile>,
     pub recurrence_form: RecurrenceDto,
 
     // state
+    pub profiles: Option<Vec<Profile>>,
     pub current_profile: Option<Profile>,
     pub recurrences: Option<Vec<Recurrence>>,
     pub chosen_recurrence: Option<Recurrence>,
@@ -48,15 +50,16 @@ impl Flashy {
             command_channel: command_tx,
             event_channel_sender: internal_ref,
             event_channel_receiver: event_rx,
-            auth_form_dialog: false,
+            profile_form_dialog: false,
             recurrence_dialog: false,
             profile_form: ProfileDto::default(),
+            selected_profile: None,
             recurrence_form: RecurrenceDto::default(),
+            profiles: None,
             current_profile: None,
             recurrences: None,
             chosen_recurrence: None,
         }
-
     }
 
     pub fn menu_bar(&mut self, ui: &mut Ui, ctx: &Context) {
@@ -74,8 +77,8 @@ impl Flashy {
                 } else {
                     ui.label("Not logged in");
                     ui.separator();
-                    if ui.button("Login").clicked() {
-                        self.auth_form_dialog = true;
+                    if ui.button("Add/Select").clicked() {
+                        self.profile_form_dialog = true;
                     };
                 }
             });

@@ -1,22 +1,23 @@
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
+use crate::models::profile::Profile;
+use egui::ScrollArea;
 use egui_extras::DatePickerButton;
 use poll_promise::Promise;
 
 impl Flashy {
     pub fn check_auth_dialog(&mut self, ctx: &egui::Context) {
-        if !self.auth_form_dialog {
+        if !self.profile_form_dialog {
             return;
         }
 
-        let mut open = true;
-
+        let mut keep_open = true;
         egui::Window::new("Login/Register")
-            .open(&mut open)
+            .open(&mut keep_open)
             .resizable(true)
             .default_height(500.0)
             .show(ctx, |ui| {
-                ui.columns(1, |columns| {
+                ui.columns(2, |columns| {
                     columns[0].group(|ui| {
                         ui.vertical_centered(|ui| {
                             ui.heading("Create Profile");
@@ -41,7 +42,8 @@ impl Flashy {
                                     .send(Commands::AddProfile { name, description })
                                 {
                                     eprintln!("Failed to send command: {}", e);
-                                }
+                                };
+                                self.profile_form_dialog = false;
                             }
 
                             if ui.button("Clear").clicked() {
@@ -50,18 +52,61 @@ impl Flashy {
                                     .send(StateEvent::ClearFields(ClearFieldEvent::ProfileFields))
                                 {
                                     eprintln!("Failed to send command: {}", e);
-                                }
+                                };
                             }
+                        });
+                    });
+                    columns[1].group(|ui| {
+                        ui.vertical_centered(|ui| {
+                            if self.profiles.is_none() {
+                                ui.heading("Fetching Profiles...");
+                            } else {
+                                ScrollArea::vertical().show(ui, |ui| {
+                                    if let Some(profiles) = &self.profiles {
+                                        for profile in profiles.iter() {
+                                            let is_selected =
+                                                self.selected_profile.as_ref().map(|p| p.id)
+                                                    == Some(profile.id);
+                                            if ui
+                                                .selectable_label(is_selected, &profile.name)
+                                                .clicked()
+                                            {
+                                                self.selected_profile = Some(profile.clone());
+                                            }
+                                        }
+                                    }
+                                });
+
+                                ui.add_space(10.0);
+
+                                if ui.button("Use Selected Profile").clicked() {
+                                    if let Some(profile) = &self.selected_profile {
+                                        if let Err(e) = self.event_channel_sender.send(
+                                            StateEvent::ProfileSelected(profile.clone()),
+                                        ) {
+                                            eprintln!("Failed to send command: {}", e);
+                                        }
+                                    }
+                                    self.profile_form_dialog = false;
+                                }
+                            };
                         });
                     });
                 });
             });
 
-        if !open {
-            self.current_operation = Some(Promise::spawn_async(async move {
-                StateEvent::DialogClosed(Dialog::Auth)
-            }));
-            self.auth_form_dialog = false;
+        if !keep_open {
+            self.profile_form_dialog = false;
+        }
+
+        if !self.profile_form_dialog {
+            if let Err(e) = self
+                .event_channel_sender
+                .send(StateEvent::DialogClosed(Dialog::Auth))
+            {
+                eprintln!("Failed to send event: {}", e);
+            };
+            self.profile_form_dialog = false;
         }
     }
 
