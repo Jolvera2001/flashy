@@ -1,17 +1,18 @@
-use sqlx::SqlitePool;
 use crate::flashy::Flashy;
 use crate::flashy_events::{ClearFieldEvent, Commands, Dialog, StateEvent};
 use crate::services::profile_services::create_profile;
-use crate::services::recurrence_services::create_recurrence;
+use crate::services::recurrence_services::{create_recurrence, get_recurrences};
+use sqlx::SqlitePool;
 use tokio::sync::broadcast::{Receiver, Sender};
 
 impl Flashy {
     pub fn handle_events(&mut self, ctx: &egui::Context) {
         while let Ok(state_event) = &self.event_channel_receiver.try_recv() {
             match state_event {
-                StateEvent::UserLogIn(profile) => {}
-                StateEvent::UserLogOut => {}
-                StateEvent::AddRecurrence => {}
+                StateEvent::ProfileCreated(id) => {}
+                StateEvent::ProfileSelected(id) => {}
+                StateEvent::ProfileDeselected => {}
+                StateEvent::AddRecurrence(x) => {}
                 StateEvent::DialogClosed(dialog) => match dialog {
                     Dialog::Auth => {
                         self.profile_form.clear();
@@ -54,13 +55,27 @@ pub async fn handle_commands(
     event_sender: &mut Sender<StateEvent>,
 ) {
     while let Ok(command) = command_receiver.recv().await {
-        // TODO: Move business logic here instead of within UI
-        // Ui can call channel sender in order to handle commands
         match command {
+            Commands::GetProfiles => {}
+            Commands::GetRecurrences { profile_id } => {
+                match get_recurrences(&db_pool, &profile_id).await {
+                    Ok(recurrences) => {}
+                    Err(e) => {}
+                }
+            }
             Commands::AddProfile { name, description } => {
                 match create_profile(&db_pool, &name, &description).await {
-                    Ok(_) => {}
-                    Err(_) => {}
+                    Ok(profile) => {
+                        let event = StateEvent::ProfileCreated(profile);
+                        let _ = event_sender.send(event);
+                    }
+                    Err(e) => {
+                        let event = StateEvent::OperationFailed {
+                            operation: "Create profile failed".to_string(),
+                            error: e.to_string(),
+                        };
+                        let _ = event_sender.send(event);
+                    }
                 };
             }
             Commands::AddRecurrence {
@@ -70,7 +85,6 @@ pub async fn handle_commands(
                 amount,
                 circulating_date,
             } => {
-
                 match create_recurrence(
                     &db_pool,
                     &profile_id,
@@ -79,9 +93,19 @@ pub async fn handle_commands(
                     &amount,
                     &circulating_date,
                 )
-                    .await {
-                    Ok(_) => {}
-                    Err(_) => {}
+                .await
+                {
+                    Ok(recurrence) => {
+                        let event = StateEvent::AddRecurrence(recurrence);
+                        let _ = event_sender.send(event);
+                    }
+                    Err(e) => {
+                        let event = StateEvent::OperationFailed {
+                            operation: "Error creating recurrence".to_string(),
+                            error: e.to_string(),
+                        };
+                        let _ = event_sender.send(event);
+                    }
                 }
             }
         }

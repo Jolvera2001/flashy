@@ -10,28 +10,32 @@ pub async fn create_recurrence(
     description: &str,
     amount: &f64,
     circulating_date: &DateTime<Utc>,
-) -> Result<Uuid, Error> {
+) -> Result<Recurrence, Error> {
     let id = Uuid::new_v4();
     let now = Utc::now();
 
     sqlx::query("INSERT INTO recurrences (id, profile_id, date_created, date_updated, name, description, amount, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
         .bind(&id)
-        .bind(&profile_id)
+        .bind(profile_id)
         .bind(&now)
         .bind(&now)
-        .bind(&name)
-        .bind(&description)
-        .bind(&amount)
-        .bind(&circulating_date)
+        .bind(name)
+        .bind(description)
+        .bind(amount)
+        .bind(circulating_date)
         .execute(pool).await?;
+    
+    let recurrence = sqlx::query_as::<_, Recurrence>("SELECT * FROM recurrences WHERE id = ?")
+        .bind(&id)
+        .fetch_one(pool).await?;
 
-    Ok(id)
+    Ok(recurrence)
 }
 
 pub async fn get_recurrences(pool: &SqlitePool, user_id: &Uuid) -> Result<Vec<Recurrence>, Error> {
     let recurrences =
         sqlx::query_as::<_, Recurrence>("SELECT * FROM recurrences WHERE user_id = ?")
-            .bind(&user_id)
+            .bind(user_id)
             .fetch_all(pool)
             .await?;
 
@@ -55,9 +59,9 @@ pub async fn update_recurrence(
     circulating_date: &DateTime<Utc>,
 ) -> Result<(), Error> {
     sqlx::query("UPDATE recurrences SET name = ?, description = ?, amount = ?, circulating_date = ? WHERE id = ?", ).bind(&name)
-    .bind(&description)
-    .bind(&amount.to_string())
-    .bind(&circulating_date)
+    .bind(description)
+    .bind(amount.to_string())
+    .bind(circulating_date)
         .execute(pool)
         .await?;
 

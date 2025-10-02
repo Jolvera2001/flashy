@@ -1,12 +1,17 @@
+use crate::models::profile::Profile;
+use crate::models::recurrence::Recurrence;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use crate::models::profile::Profile;
 
 #[derive(Clone)]
 pub enum Commands {
+    GetProfiles,
     AddProfile {
         name: String,
         description: String,
+    },
+    GetRecurrences {
+        profile_id: Uuid,
     },
     AddRecurrence {
         profile_id: Uuid,
@@ -19,9 +24,10 @@ pub enum Commands {
 
 #[derive(Clone)]
 pub enum StateEvent {
-    UserLogIn(Profile),
-    UserLogOut,
-    AddRecurrence,
+    ProfileCreated(Profile),
+    ProfileSelected(Profile),
+    ProfileDeselected,
+    AddRecurrence(Recurrence),
 
     // ui
     DialogClosed(Dialog),
@@ -29,10 +35,7 @@ pub enum StateEvent {
     ClearFields(ClearFieldEvent),
 
     // error
-    OperationFailed {
-        operation: String,
-        error: core::fmt::Error,
-    },
+    OperationFailed { operation: String, error: String },
 }
 
 #[derive(Clone)]

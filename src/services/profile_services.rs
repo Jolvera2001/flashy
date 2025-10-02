@@ -1,8 +1,9 @@
 use chrono::Utc;
 use sqlx::{Error, SqlitePool};
 use uuid::Uuid;
+use crate::models::profile::Profile;
 
-pub async fn create_profile(pool: &SqlitePool, name: &str, description: &str) -> Result<Uuid, Error> {
+pub async fn create_profile(pool: &SqlitePool, name: &str, description: &str) -> Result<Profile, Error> {
     let id = Uuid::new_v4();
     let now = Utc::now();
 
@@ -16,7 +17,12 @@ pub async fn create_profile(pool: &SqlitePool, name: &str, description: &str) ->
     .bind(&description)
     .execute(pool).await?;
 
-    Ok(id)
+    let profile = sqlx::query_as::<_, Profile>("SELECT * FROM profiles WHERE id = ?")
+        .bind(&id)
+        .fetch_one(pool)
+        .await?;
+
+    Ok(profile)
 }
 
 pub async fn delete_profile(pool: &SqlitePool, id: &Uuid) -> Result<(), Error> {
