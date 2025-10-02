@@ -39,7 +39,7 @@ impl Flashy {
 
         let db_clone = db_pool.clone();
         tokio::spawn(async move {
-            handle_commands(db_clone, &mut command_rx, &mut event_tx).await; // TODO: Move sqlite pool into this method and restructure Commands enums
+            handle_commands(db_clone, &mut command_rx, &mut event_tx).await;
         });
 
         Self {

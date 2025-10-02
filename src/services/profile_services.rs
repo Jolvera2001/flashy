@@ -8,13 +8,13 @@ pub async fn create_profile(pool: &SqlitePool, name: &str, description: &str) ->
     let now = Utc::now();
 
     sqlx::query(
-        "INSERT INTO profiles (id, date_created, date_updated, name, description) VALUES (?, ?, ?, ?)",
+        "INSERT INTO profiles (id, date_created, date_updated, name, description) VALUES (?, ?, ?, ?, ?)",
     )
     .bind(&id)
     .bind(&now)
     .bind(&now)
-    .bind(&name)
-    .bind(&description)
+    .bind(name)
+    .bind(description)
     .execute(pool).await?;
 
     let profile = sqlx::query_as::<_, Profile>("SELECT * FROM profiles WHERE id = ?")
