@@ -3,6 +3,13 @@ use sqlx::{Error, SqlitePool};
 use uuid::Uuid;
 use crate::models::profile::Profile;
 
+pub async fn get_profiles(pool: &SqlitePool) -> Result<Vec<Profile>, Error> {
+    let profiles = sqlx::query_as::<_, Profile>("SELECT * FROM Profile")
+    .fetch_all(pool).await?;
+
+    Ok(profiles)
+}
+
 pub async fn create_profile(pool: &SqlitePool, name: &str, description: &str) -> Result<Profile, Error> {
     let id = Uuid::new_v4();
     let now = Utc::now();
