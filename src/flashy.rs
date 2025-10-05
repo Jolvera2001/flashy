@@ -91,6 +91,15 @@ impl Flashy {
             }
         });
     }
+
+    pub fn main_content(&mut self, ui: &mut Ui) {
+            ui.horizontal(|ui| {
+                ui.button("Add Recurrence");
+                ui.button("Placeholder C");
+                ui.separator();
+            });
+            ui.separator();
+    }
 }
 
 impl App for Flashy {
@@ -102,14 +111,7 @@ impl App for Flashy {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-           ui.horizontal(|ui| {
-               ui.button("Add Recurrence");
-               ui.button("Placeholder C");
-               ui.separator();
-           });
-            ui.separator();
-
-
+            self.main_content(ui);
         });
 
         egui::containers::TopBottomPanel::bottom("Info Bar").show(ctx, |ui| {
