@@ -62,10 +62,10 @@ impl Flashy {
         }
     }
 
-    pub fn menu_bar(&mut self, ui: &mut Ui, ctx: &Context) {
+    pub fn menu_bar(&mut self, ui: &mut Ui) {
         egui::MenuBar::new().ui(ui, |ui| {
             ui.menu_button("User", |ui| {
-                if let Some(user) = &self.current_profile {
+                if self.current_profile.is_some() {
                     if ui.button("Overview").clicked() {
                         // something
                     }
@@ -81,7 +81,7 @@ impl Flashy {
         });
     }
 
-    pub fn bottom_bar(&mut self, ui: &mut Ui, ctx: &Context) {
+    pub fn bottom_bar(&mut self, ui: &mut Ui) {
         ui.horizontal(|ui| {
             if let Some(profile) = &self.current_profile {
                 ui.label(format!("Current Profile: {}", profile.name));
@@ -99,15 +99,23 @@ impl Flashy {
                 ui.separator();
             });
             ui.separator();
+
+            if let Some(recurrences) = &self.recurrences {
+
+            } else {
+                ui.vertical_centered(|ui| {
+                   ui.heading("No Recurrences on this profile!")
+                });
+            }
     }
 }
 
 impl App for Flashy {
-    fn update(&mut self, ctx: &Context, frame: &mut Frame) {
+    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         self.handle_events(ctx);
 
         egui::containers::TopBottomPanel::top("Menu Bar").show(ctx, |ui| {
-            self.menu_bar(ui, ctx);
+            self.menu_bar(ui);
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -115,7 +123,7 @@ impl App for Flashy {
         });
 
         egui::containers::TopBottomPanel::bottom("Info Bar").show(ctx, |ui| {
-            self.bottom_bar(ui, ctx);
+            self.bottom_bar(ui);
         });
 
         self.check_auth_dialog(ctx);
