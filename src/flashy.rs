@@ -93,26 +93,41 @@ impl Flashy {
     }
 
     pub fn main_content(&mut self, ui: &mut Ui) {
-            ui.horizontal(|ui| {
-                ui.button("Add Recurrence");
-                ui.button("Placeholder C");
-                ui.separator();
-            });
+        let has_profile = self.current_profile.is_some();
+
+        ui.horizontal(|ui| {
+            if ui.add_enabled(has_profile, egui::Button::new("Add Recurrence")).clicked() {
+
+            };
             ui.separator();
+        });
+        ui.separator();
 
-            if let Some(recurrences) = &self.recurrences {
-
-            } else {
-                ui.vertical_centered(|ui| {
-                   ui.heading("No Recurrences on this profile!")
+        if let Some(recurrences) = &self.recurrences {
+            if recurrences.is_empty() {
+                ui.horizontal_centered(|ui| {
+                    ui.vertical_centered(|ui| ui.heading("No Recurrences on this profile!"));
                 });
+            } else {
             }
+        } else {
+            ui.horizontal_centered(|ui| {
+                ui.vertical_centered(|ui| ui.heading("No Recurrences"));
+            });
+        }
     }
 }
 
 impl App for Flashy {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         self.handle_events(ctx);
+
+        if let Some(profile) = &self.current_profile && self.recurrences.is_none() {
+            if let Err(e) = self.command_channel.send(Commands::GetRecurrences { profile_id: profile.id })
+            {
+                eprintln!("Error sending GetRecurrences command: {}", e)
+            }
+        }
 
         egui::containers::TopBottomPanel::top("Menu Bar").show(ctx, |ui| {
             self.menu_bar(ui);

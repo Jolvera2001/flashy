@@ -34,7 +34,7 @@ pub async fn create_recurrence(
 
 pub async fn get_recurrences(pool: &SqlitePool, user_id: &Uuid) -> Result<Vec<Recurrence>, Error> {
     let recurrences =
-        sqlx::query_as::<_, Recurrence>("SELECT * FROM recurrences WHERE user_id = ?")
+        sqlx::query_as::<_, Recurrence>("SELECT * FROM recurrences WHERE profile_id = ?")
             .bind(user_id)
             .fetch_all(pool)
             .await?;

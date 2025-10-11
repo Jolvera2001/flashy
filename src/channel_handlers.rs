@@ -6,7 +6,7 @@ use sqlx::SqlitePool;
 use tokio::sync::broadcast::{Receiver, Sender};
 
 impl Flashy {
-    pub fn handle_events(&mut self, ctx: &egui::Context) {
+    pub fn handle_events(&mut self, _ctx: &egui::Context) {
         while let Ok(state_event) = &self.event_channel_receiver.try_recv() {
             match state_event {
                 StateEvent::ProfilesFetched(profiles) => {
@@ -24,7 +24,13 @@ impl Flashy {
                 StateEvent::GetRecurrences(recurrences) => {
                     self.recurrences = Option::from(recurrences.clone());
                 }
-                StateEvent::AddRecurrence(x) => {}
+                StateEvent::AddRecurrence(recurrence) => {
+                    if let Some(ref mut recurrences) = self.recurrences {
+                        recurrences.push(recurrence.clone());
+                    } else {
+                        self.recurrences = Some(vec![recurrence.clone()])
+                    }
+                }
                 StateEvent::DialogClosed(dialog) => match dialog {
                     Dialog::Auth => {
                         self.profile_form.clear();
