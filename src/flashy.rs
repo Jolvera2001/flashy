@@ -97,7 +97,7 @@ impl Flashy {
 
         ui.horizontal(|ui| {
             if ui.add_enabled(has_profile, egui::Button::new("Add Recurrence")).clicked() {
-
+                self.recurrence_dialog = true;
             };
             ui.separator();
         });
