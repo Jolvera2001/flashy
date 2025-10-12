@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-eframe = "0.32.3"
-egui = "0.32.3"
-egui_extras = { version = "0.32.3", features = ["datepicker"] }
+eframe = "0.33.0"
+egui = "0.33.0"
+egui_extras = { version = "0.33.0", features = ["datepicker"] }
 tokio = { version = "1.47.1", features = ["full"] }
 uuid = { version = "1.18.1", features = ["v4", "serde"] }
 chrono = { version = "0.4.42", features = ["serde"] }
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 poll-promise = { version = "0.3.0", features = ["tokio"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite", "macros", "chrono", "uuid", "rust_decimal"] }
-rust_decimal = { version = "1.37.2", features = ["serde"] }
+rust_decimal = { version = "1.38.0", features = ["serde"] }
