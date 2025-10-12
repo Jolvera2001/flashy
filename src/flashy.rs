@@ -6,6 +6,7 @@ use crate::models::recurrence::Recurrence;
 use crate::models::recurrence_dto::RecurrenceDto;
 use eframe::{App, Frame};
 use egui::{Context, Ui};
+use egui_extras::{Column, TableBuilder};
 use poll_promise::Promise;
 use sqlx::SqlitePool;
 use tokio::sync::broadcast;
@@ -34,7 +35,7 @@ pub struct Flashy {
 }
 
 impl Flashy {
-    pub fn new(cc: &eframe::CreationContext<'_>, db_pool: SqlitePool) -> Self {
+    pub fn new(_cc: &eframe::CreationContext<'_>, db_pool: SqlitePool) -> Self {
         let (command_tx, mut command_rx) = broadcast::channel::<Commands>(30);
         let (mut event_tx, event_rx) = broadcast::channel::<StateEvent>(30);
         let internal_ref = event_tx.clone();
@@ -96,7 +97,10 @@ impl Flashy {
         let has_profile = self.current_profile.is_some();
 
         ui.horizontal(|ui| {
-            if ui.add_enabled(has_profile, egui::Button::new("Add Recurrence")).clicked() {
+            if ui
+                .add_enabled(has_profile, egui::Button::new("Add Recurrence"))
+                .clicked()
+            {
                 self.recurrence_dialog = true;
             };
             ui.separator();
@@ -109,6 +113,39 @@ impl Flashy {
                     ui.vertical_centered(|ui| ui.heading("No Recurrences on this profile!"));
                 });
             } else {
+                TableBuilder::new(ui)
+                    .striped(true)
+                    .column(Column::auto().resizable(true))
+                    .column(Column::auto().resizable(true))
+                    .column(Column::remainder())
+                    .header(30.0, |mut header| {
+                        header.col(|ui| {
+                            ui.heading("Name");
+                        });
+                        header.col(|ui| {
+                            ui.heading("Amount");
+                        });
+                        header.col(|ui| {
+                            ui.heading("Circulating Date");
+                        });
+                    })
+                    .body(|mut body| {
+                        body.row(40.0, |mut row| {
+                            if let Some(recurrences) = &self.recurrences {
+                                for recurrence in recurrences {
+                                    row.col(|ui| {
+                                        ui.label(&recurrence.name);
+                                    });
+                                    row.col(|ui| {
+                                        ui.label(&recurrence.amount.to_string());
+                                    });
+                                    row.col(|ui| {
+                                        ui.label(&recurrence.circulating_date.date_naive().to_string());
+                                    });
+                                }
+                            }
+                        });
+                    });
             }
         } else {
             ui.horizontal_centered(|ui| {
@@ -122,9 +159,12 @@ impl App for Flashy {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         self.handle_events(ctx);
 
-        if let Some(profile) = &self.current_profile && self.recurrences.is_none() {
-            if let Err(e) = self.command_channel.send(Commands::GetRecurrences { profile_id: profile.id })
-            {
+        if let Some(profile) = &self.current_profile
+            && self.recurrences.is_none()
+        {
+            if let Err(e) = self.command_channel.send(Commands::GetRecurrences {
+                profile_id: profile.id,
+            }) {
                 eprintln!("Error sending GetRecurrences command: {}", e)
             }
         }
