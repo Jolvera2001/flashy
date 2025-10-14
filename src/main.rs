@@ -5,11 +5,11 @@ use eframe::egui;
 use sqlx::SqlitePool;
 use std::str::FromStr;
 
+mod channel_handlers;
 mod flashy;
+mod flashy_dialogs;
 mod flashy_events;
 mod models;
-mod flashy_dialogs;
-mod channel_handlers;
 mod services;
 
 #[tokio::main]

@@ -20,6 +20,7 @@ impl Flashy {
                 }
                 StateEvent::ProfileDeselected => {
                     self.current_profile = None;
+                    self.recurrences = None;
                 }
                 StateEvent::GetRecurrences(recurrences) => {
                     self.recurrences = Option::from(recurrences.clone());

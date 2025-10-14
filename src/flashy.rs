@@ -150,7 +150,8 @@ impl Flashy {
                                         });
 
                                         if row.response().clicked() {
-                                            self.chosen_recurrence = Option::from(recurrence.clone());
+                                            self.chosen_recurrence =
+                                                Option::from(recurrence.clone());
                                         }
                                     }
                                 }
