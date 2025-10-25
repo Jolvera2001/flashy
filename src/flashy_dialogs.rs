@@ -82,9 +82,10 @@ impl Flashy {
 
                                 if ui.button("Use Selected Profile").clicked() {
                                     if let Some(profile) = &self.selected_profile {
-                                        if let Err(e) = self.event_channel_sender.send(
-                                            StateEvent::ProfileSelected(profile.clone()),
-                                        ) {
+                                        if let Err(e) = self
+                                            .event_channel_sender
+                                            .send(StateEvent::ProfileSelected(profile.clone()))
+                                        {
                                             eprintln!("Failed to send command: {}", e);
                                         }
                                     }
@@ -146,10 +147,14 @@ impl Flashy {
                                 .fixed_decimals(2),
                         );
 
-                        ui.label("Circulating Date:");
-                        ui.add(DatePickerButton::new(
-                            &mut self.recurrence_form.circulating_date,
-                        ));
+                        ui.horizontal(|ui| {
+                            ui.label("Circulating Date:");
+                            ui.add(DatePickerButton::new(
+                                &mut self.recurrence_form.circulating_date,
+                            ));
+                            ui.add_space(10.0);
+                            ui.checkbox(&mut self.recurrence_form.is_income, "Is Income?");
+                        });
                         ui.add_space(10.0);
 
                         ui.horizontal(|ui| {

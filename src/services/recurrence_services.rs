@@ -15,7 +15,7 @@ pub async fn create_recurrence(
     let id = Uuid::new_v4();
     let now = Utc::now();
 
-    sqlx::query("INSERT INTO recurrences (id, profile_id, date_created, date_updated, name, description, amount, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    sqlx::query("INSERT INTO recurrences (id, profile_id, date_created, date_updated, name, description, amount, is_income, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
         .bind(&id)
         .bind(profile_id)
         .bind(&now)
