@@ -138,7 +138,7 @@ impl Flashy {
                     ui.vertical_centered(|ui| ui.heading("No Recurrences on this profile!"));
                 });
             } else {
-                ui.horizontal(|ui| {
+                ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
                     ui.vertical(|ui| {
                         TableBuilder::new(ui)
                             .striped(true)
@@ -195,16 +195,31 @@ impl Flashy {
                     ui.separator();
 
                     if let Some(recurrence) = &self.chosen_recurrence {
-                        ui.vertical(|ui| {
-                            ui.heading(&recurrence.name);
-                            ui.separator();
-                            ui.label(format!("Amount: {}", recurrence.amount));
-                            ui.label(format!(
-                                "Day of monthly occurrence: {}",
-                                recurrence.circulating_date.date_naive().day()
-                            ));
-                            ui.label(format!("Is Income? {}", recurrence.is_income))
-                        });
+                        egui::ScrollArea::vertical()
+                            .max_height(ui.available_height())
+                            .show(ui, |ui| {
+                                ui.vertical(|ui| {
+                                    ui.set_width(ui.available_width());
+
+                                    ui.heading(&recurrence.name);
+                                    ui.horizontal_wrapped(|ui| {
+                                        ui.label(format!(
+                                            "Created: {} | Updated: {}",
+                                            recurrence.date_created.date_naive(),
+                                            recurrence.date_updated.date_naive()
+                                        ));
+                                    });
+                                    ui.separator();
+                                    ui.label(format!("{}", recurrence.description));
+                                    ui.separator();
+                                    ui.label(format!("Amount: {}", recurrence.amount));
+                                    ui.label(format!(
+                                        "Day of monthly occurrence: {}",
+                                        recurrence.circulating_date.date_naive().day()
+                                    ));
+                                    ui.label(format!("Is Income? {}", recurrence.is_income))
+                                });
+                            });
                     }
                 });
             }
