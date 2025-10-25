@@ -31,6 +31,7 @@ pub enum StateEvent {
     ProfileDeselected,
     AddRecurrence(Recurrence),
     GetRecurrences(Vec<Recurrence>),
+    DeselectCurrentRecurrence,
 
     // ui
     DialogClosed(Dialog),

@@ -32,6 +32,9 @@ impl Flashy {
                         self.recurrences = Some(vec![recurrence.clone()])
                     }
                 }
+                StateEvent::DeselectCurrentRecurrence => {
+                    self.chosen_recurrence = None;
+                }
                 StateEvent::DialogClosed(dialog) => match dialog {
                     Dialog::Auth => {
                         self.profile_form.clear();
@@ -44,9 +47,11 @@ impl Flashy {
                 },
                 StateEvent::DialogOpened(dialog) => match dialog {
                     Dialog::Auth => {
+                        self.profile_form_dialog = true;
                         println!("Dialog Auth opened!")
                     }
                     Dialog::Recurrence => {
+                        self.recurrence_dialog = true;
                         println!("Dialog Recurrence opened!")
                     }
                 },

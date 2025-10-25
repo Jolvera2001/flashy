@@ -1,10 +1,10 @@
-use chrono::Datelike;
 use crate::channel_handlers::handle_commands;
-use crate::flashy_events::{Commands, StateEvent};
+use crate::flashy_events::{Commands, Dialog, StateEvent};
 use crate::models::profile::Profile;
 use crate::models::profile_dto::ProfileDto;
 use crate::models::recurrence::Recurrence;
 use crate::models::recurrence_dto::RecurrenceDto;
+use chrono::Datelike;
 use eframe::{App, Frame};
 use egui::{Context, Ui};
 use egui_extras::{Column, TableBuilder};
@@ -69,15 +69,21 @@ impl Flashy {
                         // TODO: Maybe do a different page?
                     }
                     if ui.button("Logout").clicked() {
-                        if let Err(e) = self.event_channel_sender.send(
-                            StateEvent::ProfileDeselected
-                        ) {
+                        if let Err(e) = self
+                            .event_channel_sender
+                            .send(StateEvent::ProfileDeselected)
+                        {
                             eprintln!("Failed to send command: {}", e);
                         }
                     };
                 } else {
                     if ui.button("Add/Select").clicked() {
-                        self.profile_form_dialog = true;
+                        if let Err(e) = self
+                            .event_channel_sender
+                            .send(StateEvent::DialogOpened(Dialog::Auth))
+                        {
+                            eprintln!("Failed to send dialog: {}", e);
+                        }
                     };
                 }
             });
@@ -97,15 +103,32 @@ impl Flashy {
 
     pub fn main_content(&mut self, ui: &mut Ui) {
         let has_profile = self.current_profile.is_some();
+        let has_chosen = has_profile && self.chosen_recurrence.is_some();
 
         ui.horizontal(|ui| {
             if ui
                 .add_enabled(has_profile, egui::Button::new("Add Recurrence"))
                 .clicked()
             {
-                self.recurrence_dialog = true;
+                if let Err(e) = self
+                    .event_channel_sender
+                    .send(StateEvent::DialogOpened(Dialog::Recurrence))
+                {
+                    eprintln!("Failed to send command: {}", e);
+                }
             };
             ui.separator();
+            if ui
+                .add_enabled(has_chosen, egui::Button::new("Deselect Recurrence"))
+                .clicked()
+            {
+                if let Err(e) = self
+                    .event_channel_sender
+                    .send(StateEvent::DeselectCurrentRecurrence)
+                {
+                    eprintln!("Failed to send command: {}", e);
+                }
+            }
         });
         ui.separator();
 
@@ -130,7 +153,7 @@ impl Flashy {
                                     ui.heading("Amount");
                                 });
                                 header.col(|ui| {
-                                    ui.heading("Circulating Date");
+                                    ui.heading("Monthly Day");
                                 });
                             })
                             .body(|mut body| {
@@ -176,12 +199,14 @@ impl Flashy {
                             ui.heading(&recurrence.name);
                             ui.separator();
                             ui.label(format!("Amount: {}", recurrence.amount));
-                            ui.label(format!("Circulating Date: {}", recurrence.circulating_date));
+                            ui.label(format!(
+                                "Day of monthly occurrence: {}",
+                                recurrence.circulating_date.date_naive().day()
+                            ));
                             ui.label(format!("Is Income? {}", recurrence.is_income))
                         });
                     }
                 });
-
             }
         } else {
             ui.horizontal_centered(|ui| {
