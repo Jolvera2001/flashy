@@ -178,6 +178,7 @@ impl Flashy {
                             ui.separator();
                             ui.label(format!("Amount: {}", recurrence.amount));
                             ui.label(format!("Circulating Date: {}", recurrence.circulating_date));
+                            ui.label(format!("Is Income? {}", recurrence.is_income))
                         });
                     }
                 });
