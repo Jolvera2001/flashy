@@ -117,10 +117,9 @@ impl Flashy {
             return;
         }
 
-        let mut open = true;
-
+        let mut keep_open = true;
         egui::Window::new("New Recurrence")
-            .open(&mut open)
+            .open(&mut keep_open)
             .resizable(true)
             .default_height(500.0)
             .show(ctx, |ui| {
@@ -177,6 +176,8 @@ impl Flashy {
                                 }) {
                                     eprintln!("Failed to send command: {}", e);
                                 }
+
+                                self.recurrence_dialog = false;
                             };
 
                             if ui.button("Clear").clicked() {
@@ -191,7 +192,11 @@ impl Flashy {
                 });
             });
 
-        if !open {
+        if !keep_open {
+            self.profile_form_dialog = false;
+        }
+
+        if !self.recurrence_dialog {
             if let Err(e) = self
                 .event_channel_sender
                 .send(StateEvent::DialogClosed(Dialog::Auth))
