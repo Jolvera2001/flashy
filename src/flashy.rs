@@ -119,7 +119,7 @@ impl Flashy {
             };
             ui.separator();
             if ui
-                .add_enabled(has_chosen, egui::Button::new("Deselect Recurrence"))
+                .add_enabled(has_chosen, egui::Button::new("Deselect"))
                 .clicked()
             {
                 if let Err(e) = self
