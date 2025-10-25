@@ -68,10 +68,14 @@ impl Flashy {
             ui.menu_button("User", |ui| {
                 if self.current_profile.is_some() {
                     if ui.button("Overview").clicked() {
-                        // something
+                        // TODO: Maybe do a different page?
                     }
                     if ui.button("Logout").clicked() {
-                        self.current_profile = None; // TODO: change to use stateEvents instead
+                        if let Err(e) = self.event_channel_sender.send(
+                            StateEvent::ProfileDeselected
+                        ) {
+                            eprintln!("Failed to send command: {}", e);
+                        }
                     };
                 } else {
                     if ui.button("Add/Select").clicked() {
