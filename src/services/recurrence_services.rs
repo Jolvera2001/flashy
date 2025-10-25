@@ -9,12 +9,13 @@ pub async fn create_recurrence(
     name: &str,
     description: &str,
     amount: &f64,
+    is_income: &bool,
     circulating_date: &DateTime<Utc>,
 ) -> Result<Recurrence, Error> {
     let id = Uuid::new_v4();
     let now = Utc::now();
 
-    sqlx::query("INSERT INTO recurrences (id, profile_id, date_created, date_updated, name, description, amount, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+    sqlx::query("INSERT INTO recurrences (id, profile_id, date_created, date_updated, name, description, amount, circulating_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
         .bind(&id)
         .bind(profile_id)
         .bind(&now)
@@ -22,6 +23,7 @@ pub async fn create_recurrence(
         .bind(name)
         .bind(description)
         .bind(amount)
+        .bind(is_income)
         .bind(circulating_date)
         .execute(pool).await?;
     

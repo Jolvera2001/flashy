@@ -5,6 +5,7 @@ pub struct RecurrenceDto {
     pub name: String,
     pub description: String,
     pub amount: f64,
+    pub is_income: bool,
     pub circulating_date: NaiveDate,
 }
 
@@ -13,6 +14,7 @@ impl RecurrenceDto {
         self.name.clear();
         self.description.clear();
         self.amount = 0.00;
+        self.is_income = false;
         self.circulating_date = Utc::now().date_naive();
     }
 

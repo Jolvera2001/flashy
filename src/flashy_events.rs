@@ -18,6 +18,7 @@ pub enum Commands {
         name: String,
         description: String,
         amount: f64,
+        is_income: bool,
         circulating_date: DateTime<Utc>,
     },
 }

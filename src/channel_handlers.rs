@@ -123,6 +123,7 @@ pub async fn handle_commands(
                 name,
                 description,
                 amount,
+                is_income,
                 circulating_date,
             } => {
                 match create_recurrence(
@@ -131,6 +132,7 @@ pub async fn handle_commands(
                     &name,
                     &description,
                     &amount,
+                    &is_income,
                     &circulating_date,
                 )
                 .await

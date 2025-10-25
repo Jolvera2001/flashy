@@ -158,12 +158,14 @@ impl Flashy {
                                 let name = self.recurrence_form.name.clone();
                                 let description = self.recurrence_form.description.clone();
                                 let amount = self.recurrence_form.amount;
+                                let is_income = self.recurrence_form.is_income;
 
                                 if let Err(e) = self.command_channel.send(Commands::AddRecurrence {
                                     profile_id,
                                     name,
                                     description,
                                     amount,
+                                    is_income,
                                     circulating_date: self
                                         .recurrence_form
                                         .get_recurrence_date_time(),

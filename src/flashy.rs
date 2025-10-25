@@ -114,54 +114,70 @@ impl Flashy {
                 });
             } else {
                 ui.horizontal(|ui| {
-                    TableBuilder::new(ui)
-                        .striped(true)
-                        .column(Column::auto().resizable(true))
-                        .column(Column::auto().resizable(true))
-                        .column(Column::remainder())
-                        .header(30.0, |mut header| {
-                            header.col(|ui| {
-                                ui.heading("Name");
-                            });
-                            header.col(|ui| {
-                                ui.heading("Amount");
-                            });
-                            header.col(|ui| {
-                                ui.heading("Circulating Date");
-                            });
-                        })
-                        .body(|mut body| {
-                            body.row(40.0, |mut row| {
+                    ui.vertical(|ui| {
+                        TableBuilder::new(ui)
+                            .striped(true)
+                            .column(Column::auto().resizable(true))
+                            .column(Column::auto().resizable(true))
+                            .column(Column::auto().resizable(true))
+                            .header(25.0, |mut header| {
+                                header.col(|ui| {
+                                    ui.heading("Name");
+                                });
+                                header.col(|ui| {
+                                    ui.heading("Amount");
+                                });
+                                header.col(|ui| {
+                                    ui.heading("Circulating Date");
+                                });
+                            })
+                            .body(|mut body| {
                                 if let Some(recurrences) = &self.recurrences {
                                     for recurrence in recurrences {
-                                        row.col(|ui| {
-                                            ui.label(&recurrence.name);
-                                        });
-                                        row.col(|ui| {
-                                            ui.label(&recurrence.amount.to_string());
-                                        });
-                                        row.col(|ui| {
-                                            ui.label(
-                                                &recurrence
-                                                    .circulating_date
-                                                    .date_naive()
-                                                    .to_string(),
-                                            );
-                                        });
+                                        body.row(20.0, |mut row| {
+                                            let is_selected = self
+                                                .chosen_recurrence
+                                                .as_ref()
+                                                .map_or(false, |c| c.id == recurrence.id);
 
-                                        if row.response().clicked() {
-                                            self.chosen_recurrence =
-                                                Option::from(recurrence.clone());
-                                        }
+                                            row.col(|ui| {
+                                                if ui
+                                                    .selectable_label(is_selected, &recurrence.name)
+                                                    .clicked()
+                                                {
+                                                    self.chosen_recurrence =
+                                                        Some(recurrence.clone());
+                                                }
+                                            });
+                                            row.col(|ui| {
+                                                ui.label(&recurrence.amount.to_string());
+                                            });
+                                            row.col(|ui| {
+                                                ui.label(
+                                                    &recurrence
+                                                        .circulating_date
+                                                        .date_naive()
+                                                        .to_string(),
+                                                );
+                                            });
+                                        });
                                     }
                                 }
                             });
-                        });
+                    });
 
-                    if self.chosen_recurrence.is_some() {
-                        // show recurrence info here
+                    ui.separator();
+
+                    if let Some(recurrence) = &self.chosen_recurrence {
+                        ui.vertical(|ui| {
+                            ui.heading(&recurrence.name);
+                            ui.separator();
+                            ui.label(format!("Amount: {}", recurrence.amount));
+                            ui.label(format!("Circulating Date: {}", recurrence.circulating_date));
+                        });
                     }
                 });
+
             }
         } else {
             ui.horizontal_centered(|ui| {

@@ -58,6 +58,7 @@ async fn run_migrations(pool: &SqlitePool) -> Result<(), sqlx::Error> {
             name TEXT NOT NULL,
             description TEXT NOT NULL,
             amount TEXT NOT NULL,
+            is_income INTEGER NOT NULL,
             circulating_date TEXT NOT NULL,
             FOREIGN KEY(profile_id) REFERENCES profiles(id) ON DELETE CASCADE
         )

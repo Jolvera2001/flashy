@@ -12,5 +12,6 @@ pub struct Recurrence {
     pub name: String,
     pub description: String,
     pub amount: String,
+    pub is_income: bool,
     pub circulating_date: DateTime<Utc>,
 }
