@@ -1,3 +1,4 @@
+use chrono::Datelike;
 use crate::channel_handlers::handle_commands;
 use crate::flashy_events::{Commands, StateEvent};
 use crate::models::profile::Profile;
@@ -158,6 +159,7 @@ impl Flashy {
                                                     &recurrence
                                                         .circulating_date
                                                         .date_naive()
+                                                        .day()
                                                         .to_string(),
                                                 );
                                             });
