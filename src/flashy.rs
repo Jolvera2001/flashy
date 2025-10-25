@@ -7,7 +7,6 @@ use crate::models::recurrence_dto::RecurrenceDto;
 use eframe::{App, Frame};
 use egui::{Context, Ui};
 use egui_extras::{Column, TableBuilder};
-use poll_promise::Promise;
 use sqlx::SqlitePool;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::{Receiver, Sender};
@@ -15,7 +14,6 @@ use tokio::sync::broadcast::{Receiver, Sender};
 pub struct Flashy {
     // connections/services/events/channels
     pub db_pool: SqlitePool,
-    pub current_operation: Option<Promise<StateEvent>>,
     pub command_channel: Sender<Commands>,
     pub event_channel_sender: Sender<StateEvent>,
     pub event_channel_receiver: Receiver<StateEvent>,
@@ -47,7 +45,6 @@ impl Flashy {
 
         Self {
             db_pool,
-            current_operation: None,
             command_channel: command_tx,
             event_channel_sender: internal_ref,
             event_channel_receiver: event_rx,

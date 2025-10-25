@@ -63,7 +63,6 @@ impl Flashy {
                     );
                 }
             }
-            self.current_operation = None;
         }
     }
 }

@@ -11,6 +11,4 @@ tokio = { version = "1.47.1", features = ["full"] }
 uuid = { version = "1.18.1", features = ["v4", "serde"] }
 chrono = { version = "0.4.42", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
-poll-promise = { version = "0.3.0", features = ["tokio"] }
-sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite", "macros", "chrono", "uuid", "rust_decimal"] }
-rust_decimal = { version = "1.38.0", features = ["serde"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite", "macros", "chrono", "uuid"] }
